@@ -1,0 +1,38 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      //build_all
+      {
+        "type": "shell",
+        "label": "build_all",
+        "command": "source device/milkv-duo256m/boardconfig.sh && source build/milkvsetup.sh && defconfig cv1812cp_milkv_duo256m_sd && build_all",
+        "args": [],
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "group": "build",
+      },
+      //build_uboot
+      {
+        "type": "shell",
+        "label": "build_uboot",
+        "command": "source device/milkv-duo256m/boardconfig.sh && source build/milkvsetup.sh && defconfig cv1812cp_milkv_duo256m_sd && build_uboot",
+        "args": [],
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "group": "build",
+      },
+      //build_kernel
+      {
+        "type": "shell",
+        "label": "build_kernel",
+        "command": "source device/milkv-duo256m/boardconfig.sh && source build/milkvsetup.sh && defconfig cv1812cp_milkv_duo256m_sd && build_kernel",
+        "args": [],
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "group": "build",
+      },
+    ]
+  }
