@@ -4,7 +4,7 @@
 :: 设置你的ESP-IDF项目根目录（或作为参数传入）
 set "PROJECT_PATH=F:\esp32_8266_files\vscode_idf_5.4.1_release\esp-idf-v5.4.1\examples\get-started\hello_world"
 :: 默认串口号和波特率
-set "DEFAULT_COM=COM38"
+set "DEFAULT_COM=COM4"
 set "DEFAULT_FBPS=460800"
 set "DEFAULT_MBPS=115200"
 ::::::::: 配置 :::::::::
