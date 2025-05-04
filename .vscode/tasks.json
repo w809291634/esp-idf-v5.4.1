@@ -5,8 +5,10 @@
 {"type": "shell","label": "build","command": "idf_cmd_init.bat && idf_build.bat build",
 "args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
 //menuconfig
-{"type": "shell","label": "menuconfig","command": "idf_cmd_init.bat && idf_build.bat menuconfig",
-"args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
+{"type": "shell","label": "menuconfig","command": "start",
+"args": ["cmd.exe","/K",
+"call \"${workspaceFolder}\\idf_cmd_init.bat\" && call \"${workspaceFolder}\\idf_build.bat\" menuconfig"],
+"options": {"cwd": "${workspaceFolder}"},"group": "build",},
 //clean
 {"type": "shell","label": "clean","command": "idf_cmd_init.bat && idf_build.bat clean",
 "args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
