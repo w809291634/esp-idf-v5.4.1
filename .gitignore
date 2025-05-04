@@ -2,6 +2,9 @@
 *.o
 *.pyc
 
+examples/get-started/**/CMakeFiles
+examples/get-started/**/log
+
 # gtags
 GTAGS
 GRTAGS
