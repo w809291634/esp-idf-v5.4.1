@@ -1,10 +1,13 @@
 @echo off
+
+::::::::: 配置 :::::::::
 :: 设置你的ESP-IDF项目根目录（或作为参数传入）
 set "PROJECT_PATH=F:\esp32_8266_files\vscode_idf_5.4.1_release\esp-idf-v5.4.1\examples\get-started\hello_world"
-
 :: 默认串口号和波特率
-set "DEFAULT_COM=COM3"
-set "DEFAULT_BPS=460800"
+set "DEFAULT_COM=COM38"
+set "DEFAULT_FBPS=460800"
+set "DEFAULT_MBPS=115200"
+::::::::: 配置 :::::::::
 
 :: 获取当前终端所在目录
 set "CURRENT_DIR=%cd%"
@@ -44,24 +47,24 @@ if /i "%~1"=="build" (
     call :set_target %~2
 ) else if /i "%~1"=="flash" (
     if "%~2"=="" (
-        echo Using default port: %DEFAULT_COM%, baud rate: %DEFAULT_BPS%
-        call :flash %DEFAULT_COM% %DEFAULT_BPS%
+        echo Using default port: %DEFAULT_COM%, baud rate: %DEFAULT_FBPS%
+        call :flash %DEFAULT_COM% %DEFAULT_FBPS%
     ) else (
-        call :flash %~2 %~3
+        call :flash %~2 %DEFAULT_FBPS%
     )
 ) else if /i "%~1"=="monitor" (
     if "%~2"=="" (
-        echo Using default port: %DEFAULT_COM%, baud rate: %DEFAULT_BPS%
-        call :monitor %DEFAULT_COM% %DEFAULT_BPS%
+        echo Using default port: %DEFAULT_COM%, baud rate: %DEFAULT_MBPS%
+        call :monitor %DEFAULT_COM% %DEFAULT_MBPS%
     ) else (
-        call :monitor %~2 %~3
+        call :monitor %~2 %DEFAULT_MBPS%
     )
 ) else if /i "%~1"=="flash_monitor" (
     if "%~2"=="" (
-        echo Using default port: %DEFAULT_COM%, baud rate: %DEFAULT_BPS%
-        call :flash_monitor %DEFAULT_COM% %DEFAULT_BPS%
+        echo Using default port: %DEFAULT_COM%, flash baud: %DEFAULT_FBPS%, monitor baud: %DEFAULT_MBPS%
+        call :flash_monitor %DEFAULT_COM% %DEFAULT_FBPS% %DEFAULT_MBPS%
     ) else (
-        call :flash_monitor %~2 %~3
+        call :flash_monitor %~2 %DEFAULT_FBPS% %DEFAULT_MBPS%
     )
 ) else (
     echo Invalid command: %~1
@@ -92,7 +95,9 @@ exit /b 0
     echo   size-files
     echo   reconfigure
     echo   set-target ^<target^>
-    echo   flash [port] [baud_rate]
+    echo   flash [port]  ^<-- Flash firmware with optional port, using default baud rate if not provided^>
+    echo   monitor [port]  ^<-- Monitor serial output with optional port, using default baud rate if not provided^>
+    echo   flash_monitor [port]  ^<-- Flash and then monitor with optional port, using default baud rates if not provided^>
     exit /b
 
 :usage_set_target
@@ -181,6 +186,11 @@ exit /b 0
     call :switch_to_project
     echo Flashing to device on port: %~1 at baud rate: %~2
     idf.py flash -p %~1 -b %~2
+    if %errorlevel% neq 0 (
+        echo Error: Failed to flash the device.
+        call :back_dir
+        exit /b %errorlevel%
+    )
     call :back_dir
     exit /b 0
 
@@ -188,6 +198,11 @@ exit /b 0
     call :switch_to_project
     echo Starting monitor on port: %~1 at baud rate: %~2
     idf.py monitor -p %~1 -b %~2
+    if %errorlevel% neq 0 (
+        echo Error: Failed to start the serial monitor.
+        call :back_dir
+        exit /b %errorlevel%
+    )
     call :back_dir
     exit /b 0
 
@@ -195,7 +210,17 @@ exit /b 0
     call :switch_to_project
     echo Flashing to device on port: %~1 at baud rate: %~2
     idf.py flash -p %~1 -b %~2
-    echo Starting monitor...
-    idf.py monitor -p %~1 -b %~2
+    if %errorlevel% neq 0 (
+        echo Error: Failed to flash the device.
+        call :back_dir
+        exit /b %errorlevel%
+    )
+    echo Starting monitor at baud rate: %~3
+    idf.py monitor -p %~1 -b %~3
+    if %errorlevel% neq 0 (
+        echo Error: Failed to start the serial monitor.
+        call :back_dir
+        exit /b %errorlevel%
+    )
     call :back_dir
     exit /b 0
