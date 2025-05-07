@@ -8,10 +8,11 @@
 :: 2. try to use environment variable IDF_PATH to query configuration managed by idf-env
 :: 3. try to use local working directory to query configuration managed by idf-env
 ::::::::: 配置 :::::::::
-set IDF_TOOLS_PATH=F:\esp32_8266_files\vscode_idf_5.4.1_release\esp-idf-tools
-set __IDF_PATH=F:\esp32_8266_files\vscode_idf_5.4.1_release\esp-idf-v5.4.1
-set __IDF_PYTHON=%IDF_TOOLS_PATH%\python_env\idf5.4_py3.11_env\Scripts\python.exe
-set __IDF_GIT=%IDF_TOOLS_PATH%/tools/idf-git/2.39.2/cmd/git.exe
+set IDF_PATH=F:\esp32_8266_files\esp-idf-v5.4.1
+
+set IDF_TOOLS_PATH=F:\esp32_8266_files\esp-idf-v5.4.1\esp-idf-tools_for_idf_v5_4_1
+set IDF_PYTHON=%IDF_TOOLS_PATH%\python_env\idf5.4_py3.11_env\Scripts\python.exe
+set IDF_GIT=%IDF_TOOLS_PATH%/tools/idf-git/2.39.2/cmd/git.exe
 ::::::::: 配置 :::::::::
 
 if "%IDF_TOOLS_PATH%" == "" (
@@ -26,9 +27,6 @@ if exist "echo" (
 )
 
 set PATH=%IDF_TOOLS_PATH%;%PATH%
-set IDF_PATH=%__IDF_PATH%
-set IDF_PYTHON=%__IDF_PYTHON%
-set IDF_GIT=%__IDF_GIT%
 
 set PREFIX=%IDF_PYTHON% %IDF_PATH%
 DOSKEY idf.py=%PREFIX%\tools\idf.py $*

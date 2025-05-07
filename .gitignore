@@ -2,6 +2,7 @@
 *.o
 *.pyc
 
+esp-idf-tools_for_idf_v5_4_1/
 examples/get-started/**/CMakeFiles
 examples/get-started/**/log
 
