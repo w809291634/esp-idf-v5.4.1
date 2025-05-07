@@ -16,7 +16,7 @@ idf_build monitor COM38  --> idf.py monitor -p COM38 -b (DEFAULT_MBPS使用默�
 idf_build monitor  --> idf.py monitor -p (DEFAULT_COM使用默认监控) -b (DEFAULT_MBPS使用默认监控)
 
 使用工具链
-esp-idf-tools_-v5.4.1.zip
+esp-idf-tools_for_idf_v5_4_1.zip
 
 修改：pyvenv.cfg
 F:\esp32_8266_files\esp-idf-v5.4.1\esp-idf-tools_for_idf_v5_4_1\python_env\idf5.4_py3.11_env\pyvenv.cfg
