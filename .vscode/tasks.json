@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
 //build
-{"type": "shell","label": "build","command": "idf_cmd_init.bat && idf_build.bat build",
+{"type": "shell","label": "idf_build","command": "idf_cmd_init.bat && idf_build.bat build",
 "args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
 //menuconfig
 {"type": "shell","label": "menuconfig","command": "start",
