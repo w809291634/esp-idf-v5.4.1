@@ -24,8 +24,11 @@
 //size-files
 {"type": "shell","label": "size-files","command": "idf_cmd_init.bat && idf_build.bat size-files",
 "args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
-//set-target
-{"type": "shell","label": "set-target","command": "idf_cmd_init.bat && idf_build.bat set-target esp32",
+//set-target esp32
+{"type": "shell","label": "set-target esp32","command": "idf_cmd_init.bat && idf_build.bat set-target esp32",
+"args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
+//set-target esp32s3
+{"type": "shell","label": "set-target esp32s3","command": "idf_cmd_init.bat && idf_build.bat set-target esp32s3",
 "args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
 //flash
 {"type": "shell","label": "flash","command": "idf_cmd_init.bat && idf_build.bat flash",
