@@ -2,7 +2,7 @@
 
 ::::::::: 配置 :::::::::
 :: 设置你的ESP-IDF项目根目录（或作为参数传入）
-set PROJECT_PATH=F:\esp32_8266_files\esp-idf-v5.4.1\examples\get-started\hello_world
+set PROJECT_PATH=F:\esp32_8266_files\esp-idf-v5.4.1\examples\_my_examples\get-started\hello_world
 :: 默认串口号和波特率
 set DEFAULT_COM=COM40
 set DEFAULT_FBPS=460800
@@ -50,12 +50,12 @@ if /i "%~1"=="build" (
     ) else (
         call :flash %~2 %DEFAULT_FBPS%
     )
-) else if /i "%~1"=="app-flash" (
+) else if /i "%~1"=="app_flash" (
     if "%~2"=="" (
         echo Using default port: %DEFAULT_COM%, baud rate: %DEFAULT_FBPS%
-        call :app-flash %DEFAULT_COM% %DEFAULT_FBPS%
+        call :app_flash %DEFAULT_COM% %DEFAULT_FBPS%
     ) else (
-        call :app-flash %~2 %DEFAULT_FBPS%
+        call :app_flash %~2 %DEFAULT_FBPS%
     )
 ) else if /i "%~1"=="monitor" (
     if "%~2"=="" (
@@ -70,6 +70,13 @@ if /i "%~1"=="build" (
         call :flash_monitor %DEFAULT_COM% %DEFAULT_FBPS% %DEFAULT_MBPS%
     ) else (
         call :flash_monitor %~2 %DEFAULT_FBPS% %DEFAULT_MBPS%
+    )
+) else if /i "%~1"=="app_flash_monitor" (
+    if "%~2"=="" (
+        echo Using default port: %DEFAULT_COM%, flash baud: %DEFAULT_FBPS%, monitor baud: %DEFAULT_MBPS%
+        call :app_flash_monitor %DEFAULT_COM% %DEFAULT_FBPS% %DEFAULT_MBPS%
+    ) else (
+        call :app_flash_monitor %~2 %DEFAULT_FBPS% %DEFAULT_MBPS%
     )
 ) else (
     echo Invalid command: %~1
@@ -159,7 +166,7 @@ exit /b 0
     idf.py -C "%PROJECT_PATH%" flash -p %~1 -b %~2
     exit /b 0
 
-:app-flash
+:app_flash
     echo app Flashing to device on port: %~1 at baud rate: %~2
     idf.py -C "%PROJECT_PATH%" app-flash -p %~1 -b %~2
     exit /b 0
@@ -172,6 +179,13 @@ exit /b 0
 :flash_monitor
     echo Flashing to device on port: %~1 at baud rate: %~2
     idf.py -C "%PROJECT_PATH%" flash -p %~1 -b %~2
+    echo Starting monitor at baud rate: %~3
+    idf.py -C "%PROJECT_PATH%" monitor -p %~1 -b %~3
+    exit /b 0
+
+:app_flash_monitor
+    echo Flashing app to device on port: %~1 at baud rate: %~2
+    idf.py -C "%PROJECT_PATH%" app-flash -p %~1 -b %~2
     echo Starting monitor at baud rate: %~3
     idf.py -C "%PROJECT_PATH%" monitor -p %~1 -b %~3
     exit /b 0
