@@ -50,6 +50,13 @@ if /i "%~1"=="build" (
     ) else (
         call :flash %~2 %DEFAULT_FBPS%
     )
+) else if /i "%~1"=="app-flash" (
+    if "%~2"=="" (
+        echo Using default port: %DEFAULT_COM%, baud rate: %DEFAULT_FBPS%
+        call :app-flash %DEFAULT_COM% %DEFAULT_FBPS%
+    ) else (
+        call :app-flash %~2 %DEFAULT_FBPS%
+    )
 ) else if /i "%~1"=="monitor" (
     if "%~2"=="" (
         echo Using default port: %DEFAULT_COM%, baud rate: %DEFAULT_MBPS%
@@ -150,6 +157,11 @@ exit /b 0
 :flash
     echo Flashing to device on port: %~1 at baud rate: %~2
     idf.py -C "%PROJECT_PATH%" flash -p %~1 -b %~2
+    exit /b 0
+
+:app-flash
+    echo app Flashing to device on port: %~1 at baud rate: %~2
+    idf.py -C "%PROJECT_PATH%" app-flash -p %~1 -b %~2
     exit /b 0
 
 :monitor

@@ -1,0 +1,8 @@
+.config
+*.o
+*.pyc
+
+get-started/**/CMakeFiles
+get-started/**/log
+
+

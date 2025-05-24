@@ -15,7 +15,8 @@
       "sstream": "c",
       "regex": "c"
     },
-    "terminal.integrated.defaultProfile.windows": "Command Prompt"    // 默认使用cmd终端
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
+    "terminal.integrated.scrollback": 10000
 }
   
 
