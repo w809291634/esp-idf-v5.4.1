@@ -7,6 +7,9 @@
 //flash
 {"type": "shell","label": "flash","command": "idf_cmd_init.bat && idf_build.bat flash",
 "args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
+//app-flash
+{"type": "shell","label": "app-flash","command": "idf_cmd_init.bat && idf_build.bat app-flash",
+"args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
 //monitor
 {"type": "shell","label": "monitor","command": "idf_cmd_init.bat && idf_build.bat monitor",
 "args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
@@ -34,8 +37,8 @@
 {"type": "shell","label": "size-files","command": "idf_cmd_init.bat && idf_build.bat size-files",
 "args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
 //set-target esp32
-{"type": "shell","label": "set-target esp32","command": "idf_cmd_init.bat && idf_build.bat set-target esp32",
-"args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
+// {"type": "shell","label": "set-target esp32","command": "idf_cmd_init.bat && idf_build.bat set-target esp32",
+// "args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
 //set-target esp32s3
 {"type": "shell","label": "set-target esp32s3","command": "idf_cmd_init.bat && idf_build.bat set-target esp32s3",
 "args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
