@@ -12,6 +12,7 @@
 #include "esp_chip_info.h"
 #include "esp_flash.h"
 #include "esp_system.h"
+#include "drv_led.h"
 
 void fault_test_by_div0(void) 
 {
@@ -28,7 +29,6 @@ void fault_test_by_div0(void)
 
 void app_main(void)
 {
-    fault_test_by_div0();
     printf("Hello world!\n");
 
     /* Print chip information */

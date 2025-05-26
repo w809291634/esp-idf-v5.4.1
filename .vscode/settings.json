@@ -13,7 +13,10 @@
     },
     "files.associations": {
       "sstream": "c",
-      "regex": "c"
+      "regex": "c",
+      "gpio.h": "c",
+      "esp_system.h": "c",
+      "drv_led.h": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000
