@@ -12,6 +12,12 @@
 #include "esp_system.h"
 #include "drv_led.h"
 
+#define DBG_TAG           "main"
+//#define DBG_LVL           DBG_INFO
+#define DBG_LVL           DBG_LOG
+//#define DBG_LVL           DBG_NODBG
+#include <mydbg.h>          // must after of DBG_LVL, DBG_TAG or other options
+
 void fault_test_by_div0(void) 
 {
     volatile int * SCB_CCR = (volatile int *) 0xE000ED14; // SCB->CCR
@@ -60,9 +66,12 @@ void app_main(void)
     //     vTaskDelay(1000 / portTICK_PERIOD_MS);
     // }
     // LED 测试
+    log_i("here");
     for (;;) {
+        logf_i("here");
         led_ctrl(0);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
+        logfn_i("here");
         led_ctrl(0xff);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }

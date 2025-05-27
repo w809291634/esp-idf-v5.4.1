@@ -26,7 +26,11 @@
       "task.h": "c",
       "timers.h": "c",
       "semphr.h": "c",
-      "cstdint": "c"
+      "cstdint": "c",
+      "esp_log.h": "c",
+      "format": "cpp",
+      "stacktrace": "cpp",
+      "thread": "cpp"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,

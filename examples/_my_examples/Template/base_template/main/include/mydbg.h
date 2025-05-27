@@ -38,6 +38,8 @@ extern "C" {
 #ifndef _kprintf
 #define _kprintf    printf                        // 定义串口输出函数
 #define _irq_lock   osal_irq_lock
+uint32_t esp_log_timestamp(void);
+#define _timestamp  esp_log_timestamp             // 时间戳函数
 #define dbg_hw_init at_init
 //#define _kprintf    pr_emerg                      // 定义串口输出函数
 #endif
@@ -194,7 +196,7 @@ extern "C" {
     }                                                       \
     while (0)
 */
-#ifdef DBG_COLOR
+#if defined(DBG_COLOR) && !defined(_timestamp)
   #define dbg_log_line(lvl, color_n, fmt, ...)                \
       do                                                      \
       {                                                       \
@@ -219,6 +221,42 @@ extern "C" {
           _kprintf("\033["#color_n"m[" lvl "/" "%s" "] [%s:%d] " \
           fmt "\033[0m" WRAP_TYPE,                            \
           DBG_SECTION_NAME, __func__ , __LINE__ ,##__VA_ARGS__); \
+      }                                                       \
+      while (0)
+
+  #define dbg_log_line_raw( color_n, WRAP, fmt, ...)        \
+      do                                                    \
+      {                                                     \
+          _kprintf("\033["#color_n"m"                       \
+          fmt "\033[0m" WRAP,##__VA_ARGS__);                \
+      }                                                     \
+      while (0)
+
+#elif defined(DBG_COLOR) && defined(_timestamp)
+  #define dbg_log_line(lvl, color_n, fmt, ...)                \
+      do                                                      \
+      {                                                       \
+          _kprintf("\033["#color_n"m[" lvl "/" "%s" "] (%ld) "  \
+          fmt "\033[0m" WRAP_TYPE,                            \
+          DBG_SECTION_NAME, _timestamp(), ##__VA_ARGS__);     \
+      }                                                       \
+      while (0)
+
+  #define dbg_log_line_fun(lvl, color_n, fmt, ...)            \
+      do                                                      \
+      {                                                       \
+          _kprintf("\033["#color_n"m[" lvl "/" "%s" "] (%ld) [%s] " \
+          fmt "\033[0m" WRAP_TYPE,                            \
+          DBG_SECTION_NAME, _timestamp(), __func__ , ##__VA_ARGS__);  \
+      }                                                       \
+      while (0)
+
+  #define dbg_log_line_fun_num(lvl, color_n, fmt, ...)        \
+      do                                                      \
+      {                                                       \
+          _kprintf("\033["#color_n"m[" lvl "/" "%s" "] (%ld) [%s:%d] " \
+          fmt "\033[0m" WRAP_TYPE,                            \
+          DBG_SECTION_NAME, _timestamp(), __func__ , __LINE__ ,##__VA_ARGS__); \
       }                                                       \
       while (0)
 
