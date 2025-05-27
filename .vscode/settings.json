@@ -16,7 +16,16 @@
       "regex": "c",
       "gpio.h": "c",
       "esp_system.h": "c",
-      "drv_led.h": "c"
+      "drv_led.h": "c",
+      "mydbg.h": "c",
+      "stdint.h": "c",
+      "board.h": "c",
+      "stdio.h": "c",
+      "sdkconfig.h": "c",
+      "freertos.h": "c",
+      "task.h": "c",
+      "timers.h": "c",
+      "semphr.h": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000

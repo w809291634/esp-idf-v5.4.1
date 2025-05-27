@@ -29,6 +29,7 @@ void fault_test_by_div0(void)
 
 void app_main(void)
 {
+    led_pin_init();
     printf("Hello world!\n");
 
     /* Print chip information */
