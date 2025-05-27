@@ -25,10 +25,13 @@
       "freertos.h": "c",
       "task.h": "c",
       "timers.h": "c",
-      "semphr.h": "c"
+      "semphr.h": "c",
+      "cstdint": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
-    "terminal.integrated.scrollback": 10000
+    "terminal.integrated.scrollback": 10000,
+    "editor.renderControlCharacters": true,                 //  显示空格 
+    "editor.renderWhitespace": "all",
 }
   
 

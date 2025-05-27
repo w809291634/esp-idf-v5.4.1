@@ -21,51 +21,42 @@
 *********************************************************************************************/
 void led_pin_init(void)
 {
-
-#if defined(BOARD_CONFIG_HAL_LED0_PORT) && defined(BOARD_CONFIG_HAL_LED0_PORT)
-  _HAL_LED0_RCC();
-  GPIO_Initure.Pin=_HAL_LED0_PIN;
-  HAL_GPIO_Init(_HAL_LED0_PORT,&GPIO_Initure);
-  led_write(0,0);
+#if defined(BOARD_CONFIG_HAL_LED0_GPIO)
+    gpio_reset_pin(BOARD_CONFIG_HAL_LED0_GPIO);
+    gpio_set_direction(BOARD_CONFIG_HAL_LED0_GPIO, GPIO_MODE_OUTPUT);
 #endif
-#if defined(BOARD_CONFIG_HAL_LED1_PORT) && defined(BOARD_CONFIG_HAL_LED1_PORT)
-  _HAL_LED1_RCC();
-  GPIO_Initure.Pin=_HAL_LED1_PIN;
-  HAL_GPIO_Init(_HAL_LED1_PORT,&GPIO_Initure);
-  led_write(1,0);
+#if defined(BOARD_CONFIG_HAL_LED1_GPIO)
+    gpio_reset_pin(BOARD_CONFIG_HAL_LED1_GPIO);
+    gpio_set_direction(BOARD_CONFIG_HAL_LED1_GPIO, GPIO_MODE_OUTPUT);
 #endif
-#if defined(BOARD_CONFIG_HAL_LED2_PORT) && defined(BOARD_CONFIG_HAL_LED2_PORT)
-  _HAL_LED2_RCC();
-  GPIO_Initure.Pin=_HAL_LED2_PIN;
-  HAL_GPIO_Init(_HAL_LED2_PORT,&GPIO_Initure);
-  led_write(2,0);
+#if defined(BOARD_CONFIG_HAL_LED2_GPIO)
+    gpio_reset_pin(BOARD_CONFIG_HAL_LED2_GPIO);
+    gpio_set_direction(BOARD_CONFIG_HAL_LED2_GPIO, GPIO_MODE_OUTPUT);
 #endif
-#if defined(BOARD_CONFIG_HAL_LED3_PORT) && defined(BOARD_CONFIG_HAL_LED3_PORT)
-  _HAL_LED3_RCC();
-  GPIO_Initure.Pin=_HAL_LED3_PIN;
-  HAL_GPIO_Init(_HAL_LED3_PORT,&GPIO_Initure);
-  led_write(3,0);
+#if defined(BOARD_CONFIG_HAL_LED3_GPIO)
+    gpio_reset_pin(BOARD_CONFIG_HAL_LED3_GPIO);
+    gpio_set_direction(BOARD_CONFIG_HAL_LED3_GPIO, GPIO_MODE_OUTPUT);
 #endif
 }
 
 // cmd：每位控制一个LED灯，为1时LED点亮 为0熄灭
 void led_ctrl(unsigned char cmd)
 {
-#if defined(BOARD_CONFIG_HAL_LED0_PORT) && defined(BOARD_CONFIG_HAL_LED0_PORT)
-  HAL_GPIO_WritePin(_HAL_LED0_PORT, _HAL_LED0_PIN, 
-    (GPIO_PinState)(BOARD_CONFIG_HAL_LED0_ACTIVATE ? (cmd & _HAL_LED0_NUM) : !(cmd & _HAL_LED0_NUM)));
+#if defined(BOARD_CONFIG_HAL_LED0_GPIO)
+  gpio_set_level(BOARD_CONFIG_HAL_LED0_GPIO, 
+    (uint32_t )(BOARD_CONFIG_HAL_LED0_ACTIVATE ? (cmd & _HAL_LED0_NUM) : !(cmd & _HAL_LED0_NUM)));
 #endif
-#if defined(BOARD_CONFIG_HAL_LED1_PORT) && defined(BOARD_CONFIG_HAL_LED1_PORT)
-  HAL_GPIO_WritePin(_HAL_LED1_PORT, _HAL_LED1_PIN, 
-    (GPIO_PinState)(BOARD_CONFIG_HAL_LED1_ACTIVATE ? (cmd & _HAL_LED1_NUM) : !(cmd & _HAL_LED1_NUM)));
+#if defined(BOARD_CONFIG_HAL_LED1_GPIO)
+  gpio_set_level(BOARD_CONFIG_HAL_LED1_GPIO, 
+    (uint32_t)(BOARD_CONFIG_HAL_LED1_ACTIVATE ? (cmd & _HAL_LED1_NUM) : !(cmd & _HAL_LED1_NUM)));
 #endif
-#if defined(BOARD_CONFIG_HAL_LED2_PORT) && defined(BOARD_CONFIG_HAL_LED2_PORT)
-  HAL_GPIO_WritePin(_HAL_LED2_PORT, _HAL_LED2_PIN, 
-    (GPIO_PinState)(BOARD_CONFIG_HAL_LED2_ACTIVATE ? (cmd & _HAL_LED2_NUM) : !(cmd & _HAL_LED2_NUM)));
+#if defined(BOARD_CONFIG_HAL_LED2_GPIO)
+  gpio_set_level(BOARD_CONFIG_HAL_LED2_GPIO, 
+    (uint32_t)(BOARD_CONFIG_HAL_LED2_ACTIVATE ? (cmd & _HAL_LED2_NUM) : !(cmd & _HAL_LED2_NUM)));
 #endif
-#if defined(BOARD_CONFIG_HAL_LED3_PORT) && defined(BOARD_CONFIG_HAL_LED3_PORT)
-  HAL_GPIO_WritePin(_HAL_LED3_PORT, _HAL_LED3_PIN, 
-    (GPIO_PinState)(BOARD_CONFIG_HAL_LED3_ACTIVATE ? (cmd & _HAL_LED3_NUM) : !(cmd & _HAL_LED3_NUM)));
+#if defined(BOARD_CONFIG_HAL_LED3_GPIO)
+  gpio_set_level(BOARD_CONFIG_HAL_LED3_GPIO, 
+    (uint32_t)(BOARD_CONFIG_HAL_LED3_ACTIVATE ? (cmd & _HAL_LED3_NUM) : !(cmd & _HAL_LED3_NUM)));
 #endif
 }
 
@@ -75,30 +66,30 @@ void led_write(unsigned char index ,unsigned char value)
   value = !!value;
   switch(index){
     case 0:
-#if defined(BOARD_CONFIG_HAL_LED0_PORT) && defined(BOARD_CONFIG_HAL_LED0_PORT)
-    HAL_GPIO_WritePin(_HAL_LED0_PORT, _HAL_LED0_PIN, 
-      (GPIO_PinState)(BOARD_CONFIG_HAL_LED0_ACTIVATE ? value : !value));
+#if defined(BOARD_CONFIG_HAL_LED0_GPIO)
+    gpio_set_level(BOARD_CONFIG_HAL_LED0_GPIO, 
+      (uint32_t)(BOARD_CONFIG_HAL_LED0_ACTIVATE ? value : !value));
 #endif
     break;
     
     case 1:
-#if defined(BOARD_CONFIG_HAL_LED1_PORT) && defined(BOARD_CONFIG_HAL_LED1_PORT)
-    HAL_GPIO_WritePin(_HAL_LED1_PORT, _HAL_LED1_PIN, 
-      (GPIO_PinState)(BOARD_CONFIG_HAL_LED1_ACTIVATE ? value : !value));
+#if defined(BOARD_CONFIG_HAL_LED1_GPIO)
+    gpio_set_level(BOARD_CONFIG_HAL_LED1_GPIO, 
+      (uint32_t)(BOARD_CONFIG_HAL_LED1_ACTIVATE ? value : !value));
 #endif
     break;
     
     case 2:
-#if defined(BOARD_CONFIG_HAL_LED2_PORT) && defined(BOARD_CONFIG_HAL_LED2_PORT)
-    HAL_GPIO_WritePin(_HAL_LED2_PORT, _HAL_LED2_PIN, 
-      (GPIO_PinState)(BOARD_CONFIG_HAL_LED2_ACTIVATE ? value : !value));
+#if defined(BOARD_CONFIG_HAL_LED2_GPIO)
+    gpio_set_level(BOARD_CONFIG_HAL_LED2_GPIO, 
+      (uint32_t)(BOARD_CONFIG_HAL_LED2_ACTIVATE ? value : !value));
 #endif
     break;
     
     case 3:
-#if defined(BOARD_CONFIG_HAL_LED3_PORT) && defined(BOARD_CONFIG_HAL_LED3_PORT)
-    HAL_GPIO_WritePin(_HAL_LED3_PORT, _HAL_LED3_PIN, 
-      (GPIO_PinState)(BOARD_CONFIG_HAL_LED3_ACTIVATE ? value : !value));
+#if defined(BOARD_CONFIG_HAL_LED3_GPIO)
+    gpio_set_level(BOARD_CONFIG_HAL_LED3_GPIO, 
+      (uint32_t)(BOARD_CONFIG_HAL_LED3_ACTIVATE ? value : !value));
 #endif
     break;
     default:
