@@ -29,6 +29,7 @@
 #define MY_DBG_H__
 #include "stdio.h"
 #include "string.h"
+#include "esp_log_timestamp.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,7 +39,6 @@ extern "C" {
 #ifndef _kprintf
 #define _kprintf    printf                        // 定义串口输出函数
 #define _irq_lock   osal_irq_lock
-uint32_t esp_log_timestamp(void);
 #define _timestamp  esp_log_timestamp             // 时间戳函数
 #define dbg_hw_init at_init
 //#define _kprintf    pr_emerg                      // 定义串口输出函数

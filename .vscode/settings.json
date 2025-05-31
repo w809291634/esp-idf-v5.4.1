@@ -30,7 +30,9 @@
       "esp_log.h": "c",
       "format": "cpp",
       "stacktrace": "cpp",
-      "thread": "cpp"
+      "thread": "cpp",
+      "string.h": "c",
+      "esp_log_timestamp.h": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,
