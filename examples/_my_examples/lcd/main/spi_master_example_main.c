@@ -34,16 +34,16 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define LCD_HOST    SPI2_HOST
 
-#define PIN_NUM_MISO 25
-#define PIN_NUM_MOSI 23
-#define PIN_NUM_CLK  19
-#define PIN_NUM_CS   22
+#define PIN_NUM_MISO GPIO_NUM_13
+#define PIN_NUM_MOSI GPIO_NUM_11
+#define PIN_NUM_CLK  GPIO_NUM_12
+#define PIN_NUM_CS   GPIO_NUM_10
 
-#define PIN_NUM_DC   21
-#define PIN_NUM_RST  18
-#define PIN_NUM_BCKL 5
+#define PIN_NUM_DC   GPIO_NUM_4
+#define PIN_NUM_RST  GPIO_NUM_5
+#define PIN_NUM_BCKL GPIO_NUM_6
 
-#define LCD_BK_LIGHT_ON_LEVEL   0
+#define LCD_BK_LIGHT_ON_LEVEL   1
 
 //To speed up transfers, every SPI transfer sends a bunch of lines. This define specifies how many. More means more memory use,
 //but less overhead for setting up / finishing transfers. Make sure 240 is dividable by this.
