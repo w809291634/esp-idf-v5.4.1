@@ -39,8 +39,8 @@
 #define PIN_NUM_CLK  GPIO_NUM_12
 #define PIN_NUM_CS   GPIO_NUM_10
 
-#define PIN_NUM_DC   GPIO_NUM_4
-#define PIN_NUM_RST  GPIO_NUM_5
+#define PIN_NUM_DC   GPIO_NUM_4     //GPIO_NUM_9
+#define PIN_NUM_RST  GPIO_NUM_5     //GPIO_NUM_14
 #define PIN_NUM_BCKL GPIO_NUM_6
 
 #define LCD_BK_LIGHT_ON_LEVEL   1
