@@ -18,6 +18,13 @@
 
 #include "pretty_effect.h"
 
+//#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+#define LOG_LOCAL_LEVEL ESP_LOG_INFO
+//#define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
+#include "esp_log.h"
+
+static const char *TAG = "spi_lcd";
+
 /*
  This code displays some fancy graphics on the 320x240 LCD on an ESP-WROVER_KIT board.
  This example demonstrates the use of both spi_device_transmit as well as
@@ -34,7 +41,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define LCD_HOST    SPI2_HOST
 
-#define PIN_NUM_MISO GPIO_NUM_13
+#define PIN_NUM_MISO GPIO_NUM_13    //根据实际情况，有时候不需要该引脚（不需要读）
 #define PIN_NUM_MOSI GPIO_NUM_11
 #define PIN_NUM_CLK  GPIO_NUM_12
 #define PIN_NUM_CS   GPIO_NUM_10
@@ -66,7 +73,7 @@ typedef enum {
 
 //Place data into DRAM. Constant data gets placed into DROM by default, which is not accessible by DMA.
 DRAM_ATTR static const lcd_init_cmd_t st_init_cmds[] = {
-    /* Memory Data Access Control, MX=MV=1, MY=ML=MH=0, RGB=0 */
+    /* Memory Data Access Control, MX=MV=1, MY=ML=MH=0, RGB=0 横屏 */
     {0x36, {(1 << 5) | (1 << 6)}, 1},
     /* Interface Pixel Format, 16bits/pixel for RGB/MCU interface */
     {0x3A, {0x55}, 1},
@@ -403,6 +410,7 @@ static void display_pretty_colors(spi_device_handle_t spi)
             //background. We can go on to calculate the next line set as long as we do not
             //touch line[sending_line]; the SPI sending process is still reading from that.
         }
+        ESP_LOGI(TAG,"frame:%d",frame);
     }
 }
 
