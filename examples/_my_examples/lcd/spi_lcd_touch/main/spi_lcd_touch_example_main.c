@@ -120,7 +120,7 @@ static void example_lvgl_port_update_callback(lv_display_t *disp)
 
 static void example_lvgl_flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
 {
-    example_lvgl_port_update_callback(disp);
+    // example_lvgl_port_update_callback(disp);  会触发屏幕翻转 
     esp_lcd_panel_handle_t panel_handle = lv_display_get_user_data(disp);
     int offsetx1 = area->x1;
     int offsetx2 = area->x2;
@@ -231,7 +231,7 @@ void app_main(void)
 #if CONFIG_EXAMPLE_LCD_CONTROLLER_GC9A01
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
 #endif
-    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, true, false));
+    ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, false, false));
 
     // user can flush pre-defined pattern to the screen before we turn on the screen or backlight
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
