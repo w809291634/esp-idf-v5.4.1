@@ -11,6 +11,10 @@ menu "Example Configuration"
 
         config EXAMPLE_LCD_CONTROLLER_GC9A01
             bool "GC9A01"
+
+        config EXAMPLE_LCD_CONTROLLER_ST7789
+            bool "ST7789"
+
     endchoice
 
     config EXAMPLE_LCD_TOUCH_ENABLED

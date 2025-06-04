@@ -24,6 +24,8 @@
 #include "esp_lcd_ili9341.h"
 #elif CONFIG_EXAMPLE_LCD_CONTROLLER_GC9A01
 #include "esp_lcd_gc9a01.h"
+#elif CONFIG_EXAMPLE_LCD_CONTROLLER_ST7789
+#include "esp_lcd_panel_st7789.h"
 #endif
 
 #if CONFIG_EXAMPLE_LCD_TOUCH_CONTROLLER_STMPE610
@@ -41,13 +43,15 @@ static const char *TAG = "example";
 #define EXAMPLE_LCD_PIXEL_CLOCK_HZ     (20 * 1000 * 1000)
 #define EXAMPLE_LCD_BK_LIGHT_ON_LEVEL  1
 #define EXAMPLE_LCD_BK_LIGHT_OFF_LEVEL !EXAMPLE_LCD_BK_LIGHT_ON_LEVEL
-#define EXAMPLE_PIN_NUM_SCLK           18
-#define EXAMPLE_PIN_NUM_MOSI           19
-#define EXAMPLE_PIN_NUM_MISO           21
-#define EXAMPLE_PIN_NUM_LCD_DC         5
-#define EXAMPLE_PIN_NUM_LCD_RST        3
-#define EXAMPLE_PIN_NUM_LCD_CS         4
-#define EXAMPLE_PIN_NUM_BK_LIGHT       2
+
+#define EXAMPLE_PIN_NUM_SCLK           GPIO_NUM_12
+#define EXAMPLE_PIN_NUM_MOSI           GPIO_NUM_11
+#define EXAMPLE_PIN_NUM_MISO           GPIO_NUM_13
+#define EXAMPLE_PIN_NUM_LCD_DC         GPIO_NUM_4
+#define EXAMPLE_PIN_NUM_LCD_RST        GPIO_NUM_5
+#define EXAMPLE_PIN_NUM_LCD_CS         GPIO_NUM_10
+#define EXAMPLE_PIN_NUM_BK_LIGHT       GPIO_NUM_6
+
 #define EXAMPLE_PIN_NUM_TOUCH_CS       15
 
 // The pixel number in horizontal and vertical
@@ -57,6 +61,9 @@ static const char *TAG = "example";
 #elif CONFIG_EXAMPLE_LCD_CONTROLLER_GC9A01
 #define EXAMPLE_LCD_H_RES              240
 #define EXAMPLE_LCD_V_RES              240
+#elif CONFIG_EXAMPLE_LCD_CONTROLLER_ST7789
+#define EXAMPLE_LCD_H_RES              240
+#define EXAMPLE_LCD_V_RES              320
 #endif
 // Bit number used to represent command and parameter
 #define EXAMPLE_LCD_CMD_BITS           8
@@ -214,6 +221,9 @@ void app_main(void)
 #elif CONFIG_EXAMPLE_LCD_CONTROLLER_GC9A01
     ESP_LOGI(TAG, "Install GC9A01 panel driver");
     ESP_ERROR_CHECK(esp_lcd_new_panel_gc9a01(io_handle, &panel_config, &panel_handle));
+#elif CONFIG_EXAMPLE_LCD_CONTROLLER_ST7789
+    ESP_LOGI(TAG, "Install ST7789 panel driver");
+    ESP_ERROR_CHECK(esp_lcd_new_panel_st7789(io_handle, &panel_config, &panel_handle));
 #endif
 
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
