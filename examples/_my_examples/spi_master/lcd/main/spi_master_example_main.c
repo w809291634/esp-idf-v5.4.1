@@ -376,6 +376,15 @@ static void send_line_finish(spi_device_handle_t spi)
     }
 }
 
+// 函数用于转换为大端字节序
+uint16_t to_big_endian(uint16_t value) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    return ((value & 0xFF00) >> 8) | ((value & 0x00FF) << 8);
+#else
+    return value; // 如果已经是大端，则无需转换
+#endif
+}
+
 //Simple routine to generate some patterns and send them to the LCD. Don't expect anything too
 //impressive. Because the SPI driver handles transactions in the background, we can calculate the next line
 //while the previous one is being sent.
@@ -392,8 +401,25 @@ static void display_pretty_colors(spi_device_handle_t spi)
     int sending_line = -1;
     int calc_line = 0;
 
+    uint64_t st = pdTICKS_TO_MS(xTaskGetTickCount());
+
+    // #define USE_SIM_EXP
+#ifdef USE_SIM_EXP
+    #define RED_COLOR       0xF800
+    #define BLUE_COLOR      0x001F
+    #define GREEN_COLOR     0x07E0
+    uint16_t color_data1 = to_big_endian(RED_COLOR);
+    uint16_t color_data2 = to_big_endian(BLUE_COLOR);
+    ESP_LOGI(TAG,"color1:%#x color2:%#x\r\n",color_data1,color_data2);
+    for (int y = 0; y < 320 * PARALLEL_LINES ; y ++) {
+        lines[0][y] = color_data1;
+        lines[1][y] = color_data2;
+    }
+#endif
     while (1) {
         frame++;
+#ifndef USE_SIM_EXP
+        // 官方示例
         for (int y = 0; y < 240; y += PARALLEL_LINES) {
             //Calculate a line.
             pretty_effect_calc_lines(lines[calc_line], y, frame, PARALLEL_LINES);
@@ -410,7 +436,25 @@ static void display_pretty_colors(spi_device_handle_t spi)
             //background. We can go on to calculate the next line set as long as we do not
             //touch line[sending_line]; the SPI sending process is still reading from that.
         }
-        ESP_LOGI(TAG,"frame:%d",frame);
+#else
+        // 刷屏示例
+        for (int y = 0; y < 240; y += PARALLEL_LINES) {
+            //Finish up the sending process of the previous line, if any
+            if (sending_line != -1) {
+                send_line_finish(spi);
+            }
+            sending_line = calc_line;
+            send_lines(spi, y, lines[sending_line]);
+        }
+        calc_line = (calc_line == 1) ? 0 : 1;
+#endif
+        uint64_t et = pdTICKS_TO_MS(xTaskGetTickCount());
+        if(et - st > 1000){
+            st = et;
+            static int last_frame = 0;
+            ESP_LOGI(TAG,"frame:%d et:%lld",frame - last_frame,et);
+            last_frame = frame;
+        }
     }
 }
 

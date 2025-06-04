@@ -32,7 +32,9 @@
       "stacktrace": "cpp",
       "thread": "cpp",
       "string.h": "c",
-      "esp_log_timestamp.h": "c"
+      "esp_log_timestamp.h": "c",
+      "type_traits": "c",
+      "charconv": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,
