@@ -22,5 +22,6 @@ static lv_display_rotation_t rotation = LV_DISP_ROTATION_0;
 void example_lvgl_demo_ui(lv_display_t *disp)
 {
     lv_demo_widgets();
+    lv_demo_widgets_start_slideshow();
     ESP_LOGI( TAG, "lv_demo_widgets complete" );
 }

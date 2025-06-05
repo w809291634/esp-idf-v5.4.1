@@ -40,7 +40,7 @@ static const char *TAG = "example";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// Please update the following configuration according to your LCD spec //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define EXAMPLE_LCD_PIXEL_CLOCK_HZ     (20 * 1000 * 1000)
+#define EXAMPLE_LCD_PIXEL_CLOCK_HZ     (30 * 1000 * 1000)       // 默认 20 ，可以设置到30
 #define EXAMPLE_LCD_BK_LIGHT_ON_LEVEL  1
 #define EXAMPLE_LCD_BK_LIGHT_OFF_LEVEL !EXAMPLE_LCD_BK_LIGHT_ON_LEVEL
 
@@ -69,7 +69,8 @@ static const char *TAG = "example";
 #define EXAMPLE_LCD_CMD_BITS           8
 #define EXAMPLE_LCD_PARAM_BITS         8
 
-#define EXAMPLE_LVGL_DRAW_BUF_LINES    20 // number of display lines in each draw buffer
+#define EXAMPLE_LVGL_DRAW_BUF_LINES    100 // number of display lines in each draw buffer
+                                            // 越大 lvgl 计算时间越短，默认20,越大速度快很多
 #define EXAMPLE_LVGL_TICK_PERIOD_MS    2
 #define EXAMPLE_LVGL_TASK_MAX_DELAY_MS 500
 #define EXAMPLE_LVGL_TASK_MIN_DELAY_MS 1
