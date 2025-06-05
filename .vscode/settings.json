@@ -36,7 +36,12 @@
       "type_traits": "c",
       "charconv": "c",
       "esp_lcd_gc9a01.h": "c",
-      "esp_lcd_panel_st7789.h": "c"
+      "esp_lcd_panel_st7789.h": "c",
+      "lv_demo_widgets.h": "c",
+      "lv_conf_internal.h": "c",
+      "lvgl.h": "c",
+      "cmath": "c",
+      "complex": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,
