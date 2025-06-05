@@ -2,7 +2,7 @@
 
 ::::::::: 配置 :::::::::
 :: 设置你的ESP-IDF项目根目录（或作为参数传入）,不能有空格
-set PROJECT_PATH=F:\esp32_8266_files\esp-idf-v5.4.1\examples\_my_examples\lcd\spi_lcd_touch
+set PROJECT_PATH=F:\esp32_8266_files\esp-idf-v5.4.1\examples\system\console\advanced
 :: 默认串口号和波特率
 set DEFAULT_COM=COM47
 set DEFAULT_FBPS=460800
@@ -34,6 +34,8 @@ if /i "%~1"=="build" (
     call :size_components
 ) else if /i "%~1"=="size-files" (
     call :size_files
+) else if /i "%~1"=="partition-table" (
+    call :partition_table
 ) else if /i "%~1"=="reconfigure" (
     call :reconfigure
 ) else if /i "%~1"=="set-target" (
@@ -149,6 +151,11 @@ exit /b 0
 :size_files
     echo Showing file-level firmware size...
     idf.py -C "%PROJECT_PATH%" size-files
+    exit /b 0
+
+:partition_table
+    echo Displaying partition table...
+    idf.py -C "%PROJECT_PATH%" partition-table
     exit /b 0
 
 :reconfigure

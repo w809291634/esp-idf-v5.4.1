@@ -42,6 +42,9 @@
 //size-files
 {"type": "shell","label": "size-files","command": "idf_cmd_init.bat && idf_build.bat size-files",
 "args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
+//partition-table
+{"type": "shell","label": "partition-table","command": "idf_cmd_init.bat && idf_build.bat partition-table",
+"args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
 //set-target esp32
 // {"type": "shell","label": "set-target esp32","command": "idf_cmd_init.bat && idf_build.bat set-target esp32",
 // "args": [],"options": {"cwd": "${workspaceFolder}"},"group": "build",},
