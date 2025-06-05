@@ -213,7 +213,7 @@ void app_main(void)
     esp_lcd_panel_handle_t panel_handle = NULL;
     esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num = EXAMPLE_PIN_NUM_LCD_RST,
-        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_BGR,
+        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_RGB,  // 这里应该选择 RGB，与LVGL同步 而不是 LCD_RGB_ELEMENT_ORDER_BGR
         .bits_per_pixel = 16,
     };
 #if CONFIG_EXAMPLE_LCD_CONTROLLER_ILI9341
