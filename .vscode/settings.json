@@ -41,7 +41,9 @@
       "lv_conf_internal.h": "c",
       "lvgl.h": "c",
       "cmath": "c",
-      "complex": "c"
+      "complex": "c",
+      "esp_console.h": "c",
+      "uart_vfs.h": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,

@@ -8,6 +8,3 @@ idf_component_register(
     PRIV_REQUIRES main 
     REQUIRES esp_driver_gpio
 )
-
-
-                    
