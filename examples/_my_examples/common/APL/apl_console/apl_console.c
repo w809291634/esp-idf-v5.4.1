@@ -71,57 +71,14 @@ static void initialize_nvs(void)
     ESP_ERROR_CHECK(err);
 }
 
-void apl_console_init(void)
+static void apl_console_task(void *pvParameter)
 {
-    initialize_nvs();
-
-#if CONFIG_CONSOLE_STORE_HISTORY
-    // 需要 建立分区storage，用来建立文件系统，这里默认关闭掉
-    initialize_filesystem();
-    ESP_LOGI(TAG, "Command history enabled");
-#else
-    ESP_LOGI(TAG, "Command history disabled");
-#endif
-
-    /* Initialize console output periheral (UART, USB_OTG, USB_JTAG) */
-    initialize_console_peripheral();
-
-    /* Initialize linenoise library and esp_console*/
-    initialize_console_library(HISTORY_PATH);
-
     /* Prompt to be printed before each line.
      * This can be customized, made dynamic, etc.
      */
     const char *prompt = setup_prompt(PROMPT_STR ">");
 
-    /* Register commands */
-    esp_console_register_help_command();
-    register_system_common();
-#if SOC_LIGHT_SLEEP_SUPPORTED
-    register_system_light_sleep();
-#endif
-#if SOC_DEEP_SLEEP_SUPPORTED
-    register_system_deep_sleep();
-#endif
-#if (CONFIG_ESP_WIFI_ENABLED || CONFIG_ESP_HOST_WIFI_ENABLED)
-    register_wifi();
-#endif
-    register_nvs();
-
-    printf("\n"
-           "This is an example of ESP-IDF console component.\n"
-           "Type 'help' to get the list of commands.\n"
-           "Use UP/DOWN arrows to navigate through command history.\n"
-           "Press TAB when typing command name to auto-complete.\n"
-           "Ctrl+C will terminate the console environment.\n");
-
-    if (linenoiseIsDumbMode()) {
-        printf("\n"
-               "Your terminal application does not support escape sequences.\n"
-               "Line editing and history features are disabled.\n"
-               "On Windows, try using Putty instead.\n");
-    }
-
+    ESP_LOGI(TAG, "Running on CPU %d", xPortGetCoreID());
     /* Main loop */
     while(true) {
         /* Get a line using linenoise.
@@ -166,4 +123,59 @@ void apl_console_init(void)
 
     ESP_LOGE(TAG, "Error or end-of-input, terminating console");
     esp_console_deinit();
+    vTaskDelete(NULL);
 }
+
+void apl_console_init(void)
+{
+    initialize_nvs();
+
+#if CONFIG_CONSOLE_STORE_HISTORY
+    // 需要 建立分区storage，用来建立文件系统，这里默认关闭掉
+    // 官方示例默认打开
+    initialize_filesystem();
+    ESP_LOGI(TAG, "Command history enabled");
+#else
+    ESP_LOGI(TAG, "Command history disabled");
+#endif
+
+    /* Initialize console output periheral (UART, USB_OTG, USB_JTAG) */
+    initialize_console_peripheral();
+
+    /* Initialize linenoise library and esp_console*/
+    initialize_console_library(HISTORY_PATH);
+
+    /* Register commands */
+    esp_console_register_help_command();
+    register_system_common();
+#if SOC_LIGHT_SLEEP_SUPPORTED
+    register_system_light_sleep();
+#endif
+#if SOC_DEEP_SLEEP_SUPPORTED
+    register_system_deep_sleep();
+#endif
+#if (CONFIG_ESP_WIFI_ENABLED || CONFIG_ESP_HOST_WIFI_ENABLED)
+    register_wifi();
+#endif
+    register_nvs();
+
+    printf("\n"
+           "This is an example of ESP-IDF console component.\n"
+           "Type 'help' to get the list of commands.\n"
+           "Use UP/DOWN arrows to navigate through command history.\n"
+           "Press TAB when typing command name to auto-complete.\n"
+           "Ctrl+C will terminate the console environment.\n");
+
+    if (linenoiseIsDumbMode()) {
+        printf("\n"
+               "Your terminal application does not support escape sequences.\n"
+               "Line editing and history features are disabled.\n"
+               "On Windows, try using Putty instead.\n");
+    }
+
+    // 创建任务并绑定到 CPU1
+    BaseType_t task_created = xTaskCreatePinnedToCore(&apl_console_task, "apl_console", 4096, NULL, 20, NULL, 1);
+    // 使用 ESP_ERROR_CHECK 检查是否成功创建任务
+    ESP_ERROR_CHECK(task_created == pdPASS ? ESP_OK : ESP_FAIL);
+}
+

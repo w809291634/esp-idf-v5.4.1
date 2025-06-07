@@ -135,11 +135,13 @@ void initialize_console_library(const char *history_path)
     linenoiseHistoryLoad(history_path);
 #endif // CONFIG_CONSOLE_STORE_HISTORY
 
+#ifndef CONFIG_FORCE_SUPPORTS_ESCAPE_SEQ
     /* Figure out if the terminal supports escape sequences */
     const int probe_status = linenoiseProbe();
     if (probe_status) {         /* zero indicates success */
         linenoiseSetDumbMode(1);
     }
+#endif
 }
 
 char *setup_prompt(const char *prompt_str)

@@ -46,7 +46,9 @@
       "uart_vfs.h": "c",
       "ranges": "c",
       "esp_vfs_fat.h": "c",
-      "stddef.h": "c"
+      "stddef.h": "c",
+      "esp_chip_info.h": "c",
+      "apl_console.h": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,
