@@ -11,6 +11,7 @@
 #include "esp_flash.h"
 #include "esp_system.h"
 #include "drv_led.h"
+#include "apl_console.h"
 
 #define DBG_TAG           "main"
 //#define DBG_LVL           DBG_INFO
@@ -66,7 +67,7 @@ void app_main(void)
     //     vTaskDelay(1000 / portTICK_PERIOD_MS);
     // }
     // LED 测试
-    log_i("here");
+    apl_console_init();
     for (;;) {
         logf_i("here");
         led_ctrl(0);

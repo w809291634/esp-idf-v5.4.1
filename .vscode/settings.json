@@ -43,7 +43,10 @@
       "cmath": "c",
       "complex": "c",
       "esp_console.h": "c",
-      "uart_vfs.h": "c"
+      "uart_vfs.h": "c",
+      "ranges": "c",
+      "esp_vfs_fat.h": "c",
+      "stddef.h": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,

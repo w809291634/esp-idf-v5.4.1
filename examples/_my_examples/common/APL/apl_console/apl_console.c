@@ -71,11 +71,12 @@ static void initialize_nvs(void)
     ESP_ERROR_CHECK(err);
 }
 
-void app_main(void)
+void apl_console_init(void)
 {
     initialize_nvs();
 
 #if CONFIG_CONSOLE_STORE_HISTORY
+    // 需要 建立分区storage，用来建立文件系统，这里默认关闭掉
     initialize_filesystem();
     ESP_LOGI(TAG, "Command history enabled");
 #else
