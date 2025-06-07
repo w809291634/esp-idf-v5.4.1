@@ -6,7 +6,7 @@
 #include "apl_console.h"
 #include "apl_utility.h"
 
-#if ( configGENERATE_RUN_TIME_STATS == 1 )
+#ifdef CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS
 volatile unsigned long CPU_RunTime = 0UL;
 
 // 软件定时器回调函数
@@ -70,11 +70,8 @@ void setupCpuUsageMonitor(void)
         vTimerCallback             // 回调函数
     );
 
-    // 启动定时器
-    if (xTimerStart(xTimer, 0) != pdPASS)
-    {
-        printf("Failed to start timer.\r\n");
-    }
+    BaseType_t ret = xTimerStart(xTimer, 0);
+    ESP_ERROR_CHECK(ret == pdPASS ? ESP_OK : ESP_FAIL);
 }
 #endif
 
@@ -83,11 +80,11 @@ void setupCpuUsageMonitor(void)
  */
 void hw_board_init(void)
 {
-#if CONFIG_APP_ENABLE_CONSOLE
+#ifdef CONFIG_APP_ENABLE_CONSOLE
     apl_console_init();
 #endif
     /* setup Cpu Usage Monitor */
-#if ( configGENERATE_RUN_TIME_STATS == 1 )
+#ifdef CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS
     setupCpuUsageMonitor();
 #endif
 }

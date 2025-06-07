@@ -216,7 +216,7 @@ static int tasks_info(int argc, char **argv)
         // 使用 uxTaskGetSystemState 填充 pxTaskStatusArray 数组
         uxArraySize = uxTaskGetSystemState(pxTaskStatusArray, uxArraySize, &uxTotalRunTime);
         
-#if (configGENERATE_RUN_TIME_STATS == 1)
+#ifdef CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS
         // 打印表头（包含 Core 和 Cpu Usage）
         printf(" Task Name       | Pri | State   | Core | Water Mask | Stack | Usage | Cpu Usage\r\n");
         printf("---------------------------------------------------------------------------\r\n");
@@ -256,7 +256,7 @@ static int tasks_info(int argc, char **argv)
             BaseType_t lastRunCore = xTaskGetCoreID(xTask);
             const char* coreStr = (lastRunCore == 0 || lastRunCore == 1) ? 
                                   (lastRunCore == 0 ? "CPU0" : "CPU1") : "?";
-#if (configGENERATE_RUN_TIME_STATS == 1)
+#ifdef CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS
             // 打印表格
             printf("%-16s| %-3d | %-7s | %-4s | %9lu | %5lu | %5.1f%% | %5.1f%%\r\n",
                    pxTaskStatusArray[x].pcTaskName,

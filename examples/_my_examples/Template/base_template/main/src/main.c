@@ -14,14 +14,15 @@
 //#define DBG_LVL           DBG_NODBG
 #include <mydbg.h>          // must after of DBG_LVL, DBG_TAG or other options
 
-void app_init(void){
-    hw_board_init();
+void app_init(void)
+{
     app_info_dump();
     led_pin_init();
 }
 
 void app_main(void)
 {
+    hw_board_init();
     app_init();
     for (;;) {
         logf_i("here");
