@@ -25,6 +25,7 @@
 #include "freertos/task.h"
 #include "cmd_system.h"
 #include "sdkconfig.h"
+#include "board.h"
 
 #ifdef CONFIG_FREERTOS_USE_STATS_FORMATTING_FUNCTIONS
 #define WITH_TASKS_INFO 1
@@ -182,22 +183,110 @@ static void register_heap(void)
 /** 'tasks' command prints the list of tasks and related information */
 #if WITH_TASKS_INFO
 
+// static int tasks_info(int argc, char **argv)
+// {
+//     const size_t bytes_per_task = 40; /* see vTaskList description */
+//     char *task_list_buffer = malloc(uxTaskGetNumberOfTasks() * bytes_per_task);
+//     if (task_list_buffer == NULL) {
+//         ESP_LOGE(TAG, "failed to allocate buffer for vTaskList output");
+//         return 1;
+//     }
+//     fputs("Task Name\tStatus\tPrio\tHWM\tTask#", stdout);
+// #ifdef CONFIG_FREERTOS_VTASKLIST_INCLUDE_COREID
+//     fputs("\tAffinity", stdout);
+// #endif
+//     fputs("\n", stdout);
+//     vTaskList(task_list_buffer);
+//     fputs(task_list_buffer, stdout);
+//     free(task_list_buffer);
+//     return 0;
+// }
+
 static int tasks_info(int argc, char **argv)
 {
-    const size_t bytes_per_task = 40; /* see vTaskList description */
-    char *task_list_buffer = malloc(uxTaskGetNumberOfTasks() * bytes_per_task);
-    if (task_list_buffer == NULL) {
-        ESP_LOGE(TAG, "failed to allocate buffer for vTaskList output");
-        return 1;
-    }
-    fputs("Task Name\tStatus\tPrio\tHWM\tTask#", stdout);
-#ifdef CONFIG_FREERTOS_VTASKLIST_INCLUDE_COREID
-    fputs("\tAffinity", stdout);
+    // 获取当前系统中的任务数量
+    UBaseType_t uxArraySize = uxTaskGetNumberOfTasks();
+
+    // 创建一个数组来保存所有任务的状态信息
+    TaskStatus_t *pxTaskStatusArray = pvPortMalloc(uxArraySize * sizeof(TaskStatus_t));
+    if (pxTaskStatusArray != NULL)
+    {
+        configRUN_TIME_COUNTER_TYPE uxTotalRunTime;
+
+        // 使用 uxTaskGetSystemState 填充 pxTaskStatusArray 数组
+        uxArraySize = uxTaskGetSystemState(pxTaskStatusArray, uxArraySize, &uxTotalRunTime);
+        
+#if (configGENERATE_RUN_TIME_STATS == 1)
+        // 打印表头（包含 Core 和 Cpu Usage）
+        printf(" Task Name       | Pri | State   | Core | Water Mask | Stack | Usage | Cpu Usage\r\n");
+        printf("---------------------------------------------------------------------------\r\n");
+#else
+        // 打印表头（只包含 Core）
+        printf(" Task Name       | Pri | State   | Core | Water Mask | Stack | Usage\r\n");
+        printf("---------------------------------------------------------------\r\n");
 #endif
-    fputs("\n", stdout);
-    vTaskList(task_list_buffer);
-    fputs(task_list_buffer, stdout);
-    free(task_list_buffer);
+        // 遍历所有任务并打印其状态和栈使用情况
+        for (UBaseType_t x = 0; x < uxArraySize; x++)
+        {
+            const char* stateStr;
+            switch (pxTaskStatusArray[x].eCurrentState)
+            {
+                case eRunning:    stateStr = "Running";    break;
+                case eReady:      stateStr = "Ready";      break;
+                case eBlocked:    stateStr = "Blocked";    break;
+                case eSuspended:  stateStr = "Suspend";    break;
+                case eDeleted:    stateStr = "Deleted";    break;
+                default:          stateStr = "Unknown";    break;
+            }
+
+            // 获取任务句柄
+            TaskHandle_t xTask = pxTaskStatusArray[x].xHandle;
+
+            // 获取栈总大小
+            size_t stackTotal = vTaskGetStackSize(xTask);
+
+            // 计算栈使用百分比
+            float stackUsedPercent = 0.0f;
+            if (stackTotal > pxTaskStatusArray[x].usStackHighWaterMark)
+            {
+                stackUsedPercent = (100.0f - ((float)pxTaskStatusArray[x].usStackHighWaterMark / (float)stackTotal) * 100.0f);
+            }
+            
+            // 获取该任务最后运行的核心
+            BaseType_t lastRunCore = xTaskGetCoreID(xTask);
+            const char* coreStr = (lastRunCore == 0 || lastRunCore == 1) ? 
+                                  (lastRunCore == 0 ? "CPU0" : "CPU1") : "?";
+#if (configGENERATE_RUN_TIME_STATS == 1)
+            // 打印表格
+            printf("%-16s| %-3d | %-7s | %-4s | %9lu | %5lu | %5.1f%% | %5.1f%%\r\n",
+                   pxTaskStatusArray[x].pcTaskName,
+                   (unsigned int)pxTaskStatusArray[x].uxCurrentPriority,
+                   stateStr,
+                   coreStr,
+                   (unsigned long)pxTaskStatusArray[x].usStackHighWaterMark,
+                   (unsigned long)stackTotal,
+                   stackUsedPercent,
+                   vTaskGetCpuUsagePercent(xTask));
+#else
+            // 打印表格
+            printf("%-16s| %-3d | %-7s | %-4s | %9lu | %5lu | %5.1f%%\r\n",
+                   pxTaskStatusArray[x].pcTaskName,
+                   (unsigned int)pxTaskStatusArray[x].uxCurrentPriority,
+                   stateStr,
+                   coreStr,
+                   (unsigned long)pxTaskStatusArray[x].usStackHighWaterMark,
+                   (unsigned long)stackTotal,
+                   stackUsedPercent);
+#endif
+        }
+
+        // 释放分配的内存
+        vPortFree(pxTaskStatusArray);
+    }
+    else
+    {
+        printf("Failed to allocate memory for task status array.\r\n");
+    }
     return 0;
 }
 
@@ -210,6 +299,13 @@ static void register_tasks(void)
         .func = &tasks_info,
     };
     ESP_ERROR_CHECK( esp_console_cmd_register(&cmd) );
+    const esp_console_cmd_t cmd1 = {
+        .command = "ps",
+        .help = "Get information about running tasks",
+        .hint = NULL,
+        .func = &tasks_info,
+    };
+    ESP_ERROR_CHECK( esp_console_cmd_register(&cmd1) );
 }
 
 #endif // WITH_TASKS_INFO

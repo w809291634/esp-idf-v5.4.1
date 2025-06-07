@@ -5,6 +5,5 @@ file(GLOB SRC_LIST "*.c")
 idf_component_register(
     SRCS ${SRC_LIST}
     INCLUDE_DIRS "."
-    PRIV_REQUIRES main 
     REQUIRES apl_console_cmd_nvs apl_console_cmd_system apl_console_cmd_wifi fatfs
 )

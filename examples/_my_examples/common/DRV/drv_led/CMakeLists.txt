@@ -5,6 +5,5 @@ file(GLOB SRC_LIST "src/*.c")
 idf_component_register(
     SRCS ${SRC_LIST}
     INCLUDE_DIRS "include"
-    PRIV_REQUIRES main 
-    REQUIRES esp_driver_gpio
+    REQUIRES esp_driver_gpio board_config
 )

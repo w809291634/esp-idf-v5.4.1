@@ -15,11 +15,9 @@
 #include <mydbg.h>          // must after of DBG_LVL, DBG_TAG or other options
 
 void app_init(void){
+    hw_board_init();
     app_info_dump();
     led_pin_init();
-#if CONFIG_APP_ENABLE_CONSOLE
-    apl_console_init();
-#endif
 }
 
 void app_main(void)

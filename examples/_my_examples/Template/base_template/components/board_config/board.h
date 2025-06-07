@@ -8,8 +8,11 @@
  * 2018-11-5      SummerGift   first version
  */
 
-#ifndef __BOARD_H__
-#define __BOARD_H__
+#pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -18,18 +21,14 @@
 #include "sdkconfig.h"
 #include "board_config.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-#ifndef Error_Handler
-#define Error_Handler() _Error_Handler(__FILE__, __LINE__)
-#endif
+void hw_board_init(void);
+uint32_t vTaskGetStackSize(TaskHandle_t TaskHandle);
+void vTaskResetRunTimeCounter(TaskHandle_t TaskHandle);
+void vTaskSetCpuUsagePercent(TaskHandle_t TaskHandle,float CpuUsagePercent);
+float vTaskGetCpuUsagePercent(TaskHandle_t TaskHandle);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
 

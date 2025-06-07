@@ -2,5 +2,5 @@
 file(GLOB SRC_LIST "src/*.c")
 
 idf_component_register(SRCS ${SRC_LIST}
-                    PRIV_REQUIRES spi_flash drv_led apl_console apl_utility
+                    REQUIRES spi_flash board drv_led apl_utility board_config
                     INCLUDE_DIRS "include")
