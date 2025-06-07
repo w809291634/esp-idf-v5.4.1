@@ -6,7 +6,7 @@ set PROJECT_PATH=F:\esp32_8266_files\esp-idf-v5.4.1\examples\_my_examples\Templa
 :: 默认串口号和波特率
 set DEFAULT_COM=COM47
 set DEFAULT_FBPS=460800
-set DEFAULT_FBPS=1152000
+set DEFAULT_FBPS=2000000
 set DEFAULT_MBPS=115200
 ::::::::: 配置 :::::::::
 
