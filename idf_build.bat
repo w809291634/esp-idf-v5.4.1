@@ -2,7 +2,7 @@
 
 ::::::::: 配置 :::::::::
 :: 设置你的ESP-IDF项目根目录（或作为参数传入）,不能有空格
-set PROJECT_PATH=F:\esp32_8266_files\esp-idf-v5.4.1\examples\_my_examples\lcd\spi_lcd_touch
+set PROJECT_PATH=F:\esp32_8266_files\esp-idf-v5.4.1\examples\_my_examples\Template\base_template
 :: 默认串口号和波特率
 set DEFAULT_COM=COM47
 set DEFAULT_FBPS=460800

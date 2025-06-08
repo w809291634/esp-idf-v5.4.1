@@ -35,6 +35,7 @@ static const char *TAG = "cmd_system_common";
 
 static void register_free(void);
 static void register_heap(void);
+static void register_meminfo(void);
 static void register_version(void);
 static void register_restart(void);
 #if WITH_TASKS_INFO
@@ -46,6 +47,7 @@ void register_system_common(void)
 {
     register_free();
     register_heap();
+    register_meminfo();
     register_version();
     register_restart();
 #if WITH_TASKS_INFO
@@ -200,15 +202,16 @@ static int mem_info(int argc, char **argv)
 
     // 打印结果
     printf("Memory Usage Summary:\n");
-    printf("  Internal SRAM Free:    %8lu KB\n", sram_free / 1024);
+    printf("  Internal SRAM Free:    %8lu B (%8lu KB)\n", sram_free, sram_free / 1024);
 
 #if CONFIG_SPIRAM
-    printf("  External PSRAM Free:   %8lu KB\n", psram_free / 1024);
+    printf("  External PSRAM Free:   %8lu B (%8lu KB)\n", psram_free, psram_free / 1024);
 #else
     printf("  External PSRAM Free:   Not Available (PSRAM not enabled)\n");
 #endif
 
-    printf("  Total Free:            %8lu KB (%.1f MB)\n", total_free / 1024, total_free / (1024.0 * 1024.0));
+    printf("  Total Free:            %8lu B (%8lu KB / %.2f MB)\n",
+           total_free, total_free / 1024, total_free / (1024.0 * 1024.0));
 
     return 0;
 }
