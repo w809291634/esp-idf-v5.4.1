@@ -8,6 +8,7 @@
 #include "apl_console.h"
 #include "apl_utility.h"
 #include "lvgl_app.h"
+#include "esp32_cam.h"
 
 #define DBG_TAG           "main"
 //#define DBG_LVL           DBG_INFO
@@ -19,15 +20,17 @@ void app_init(void)
 {
     app_info_dump();
     led_pin_init();
+    camera_init();
 }
 
 void app_main(void)
 {
     hw_board_init();
-    lvgl_init();
+    // lvgl_init();
     app_init();
     for (;;) {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        // jpg_httpd_handler();
+        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
     printf("Restarting now.\n");
     fflush(stdout);

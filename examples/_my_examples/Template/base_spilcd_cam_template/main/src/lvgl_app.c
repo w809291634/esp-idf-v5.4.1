@@ -69,7 +69,7 @@ static const char *TAG = "lvgl_app";
 #define EXAMPLE_LCD_CMD_BITS           8
 #define EXAMPLE_LCD_PARAM_BITS         8
 
-#define EXAMPLE_LVGL_DRAW_BUF_LINES    140 // number of display lines in each draw buffer
+#define EXAMPLE_LVGL_DRAW_BUF_LINES    130 // number of display lines in each draw buffer
                                             // 越大 lvgl 计算时间越短，默认20,越大速度快很多
 #define EXAMPLE_LVGL_TICK_PERIOD_MS    2
 #define EXAMPLE_LVGL_TASK_MAX_DELAY_MS 500
