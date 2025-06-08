@@ -25,11 +25,6 @@ void app_main(void)
     hw_board_init();
     app_init();
     for (;;) {
-        logf_i("here");
-        led_ctrl(0);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-        logfn_i("here");
-        led_ctrl(0xff);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
     printf("Restarting now.\n");
