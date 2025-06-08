@@ -14,6 +14,8 @@
 //#define DBG_LVL           DBG_NODBG
 #include <mydbg.h>          // must after of DBG_LVL, DBG_TAG or other options
 
+void lvgl_app_init(void);
+
 void app_init(void)
 {
     app_info_dump();
@@ -24,6 +26,7 @@ void app_main(void)
 {
     hw_board_init();
     app_init();
+    lvgl_app_init();
     for (;;) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }

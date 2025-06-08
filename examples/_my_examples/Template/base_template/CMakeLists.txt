@@ -29,7 +29,7 @@ add_component_dirs_from(${DRV_DIR})
 # 可选：打印当前列表（调试用）
 # message(STATUS "Current EXTRA_COMPONENT_DIRS = ${EXTRA_COMPONENT_DIRS}")
 # 能够减少编译时间
-set(COMPONENTS main esp_psram)
+# set(COMPONENTS main esp_psram apl_lvgl esp_lcd)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(base_template)
