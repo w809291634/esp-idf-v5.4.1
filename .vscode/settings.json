@@ -54,7 +54,8 @@
       "board_config.h": "c",
       "ctype.h": "c",
       "freertos_tasks_c_additions.h": "c",
-      "esp_lcd_panel_io.h": "c"
+      "esp_lcd_panel_io.h": "c",
+      "lvgl_app.h": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,

@@ -7,14 +7,13 @@
 #include "drv_led.h"
 #include "apl_console.h"
 #include "apl_utility.h"
+#include "lvgl_app.h"
 
 #define DBG_TAG           "main"
 //#define DBG_LVL           DBG_INFO
 #define DBG_LVL           DBG_LOG
 //#define DBG_LVL           DBG_NODBG
 #include <mydbg.h>          // must after of DBG_LVL, DBG_TAG or other options
-
-void lvgl_app_init(void);
 
 void app_init(void)
 {
@@ -25,8 +24,8 @@ void app_init(void)
 void app_main(void)
 {
     hw_board_init();
+    lvgl_init();
     app_init();
-    lvgl_app_init();
     for (;;) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }

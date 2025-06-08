@@ -52,7 +52,7 @@ static const char *TAG = "lvgl_app";
 #define EXAMPLE_PIN_NUM_LCD_CS         GPIO_NUM_10
 #define EXAMPLE_PIN_NUM_BK_LIGHT       GPIO_NUM_6
 
-#define EXAMPLE_PIN_NUM_TOUCH_CS       15
+#define EXAMPLE_PIN_NUM_TOUCH_CS       -1
 
 // The pixel number in horizontal and vertical
 #if CONFIG_EXAMPLE_LCD_CONTROLLER_ILI9341
@@ -69,7 +69,7 @@ static const char *TAG = "lvgl_app";
 #define EXAMPLE_LCD_CMD_BITS           8
 #define EXAMPLE_LCD_PARAM_BITS         8
 
-#define EXAMPLE_LVGL_DRAW_BUF_LINES    200 // number of display lines in each draw buffer
+#define EXAMPLE_LVGL_DRAW_BUF_LINES    140 // number of display lines in each draw buffer
                                             // 越大 lvgl 计算时间越短，默认20,越大速度快很多
 #define EXAMPLE_LVGL_TICK_PERIOD_MS    2
 #define EXAMPLE_LVGL_TASK_MAX_DELAY_MS 500
@@ -79,6 +79,19 @@ static const char *TAG = "lvgl_app";
 
 // LVGL library is not thread-safe, this example will call LVGL APIs from different tasks, so use a mutex to protect it
 static _lock_t lvgl_api_lock;
+
+#define DRAW_BUFFER_STATIC_ALLOC
+// 启动了 psram 后，这里可以使用静态分配，其他动态内存使用 psram
+#ifdef DRAW_BUFFER_STATIC_ALLOC
+#define DRAW_BUFFER_SIZE    (size_t)(EXAMPLE_LCD_H_RES * EXAMPLE_LVGL_DRAW_BUF_LINES * sizeof(lv_color16_t))
+// 静态分配两个缓冲区，并进行对齐处理（适用于DMA）
+static uint8_t DRAM_ATTR buf1[DRAW_BUFFER_SIZE] __attribute__((aligned(16)));
+static uint8_t DRAM_ATTR buf2[DRAW_BUFFER_SIZE] __attribute__((aligned(16)));
+
+// 检查是否对齐（可选）
+_Static_assert(((uintptr_t)buf1 % 16) == 0, "buf1 not aligned");
+_Static_assert(((uintptr_t)buf2 % 16) == 0, "buf2 not aligned");
+#endif
 
 extern void example_lvgl_demo_ui(lv_disp_t *disp);
 
@@ -90,6 +103,7 @@ static bool example_notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t panel_io, 
 }
 
 /* Rotate display and touch, when rotated screen in LVGL. Called when driver parameters are updated. */
+#if 0
 static void example_lvgl_port_update_callback(lv_display_t *disp)
 {
     esp_lcd_panel_handle_t panel_handle = lv_display_get_user_data(disp);
@@ -118,6 +132,7 @@ static void example_lvgl_port_update_callback(lv_display_t *disp)
         break;
     }
 }
+#endif
 
 static void example_lvgl_flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
 {
@@ -176,7 +191,7 @@ static void example_lvgl_port_task(void *arg)
     }
 }
 
-void lvgl_app_init(void)
+void lvgl_init(void)
 {
     ESP_LOGI(TAG, "Turn off LCD backlight");
     gpio_config_t bk_gpio_config = {
@@ -250,10 +265,12 @@ void lvgl_app_init(void)
     // it's recommended to choose the size of the draw buffer(s) to be at least 1/10 screen sized
     size_t draw_buffer_sz = EXAMPLE_LCD_H_RES * EXAMPLE_LVGL_DRAW_BUF_LINES * sizeof(lv_color16_t);
 
+#ifndef DRAW_BUFFER_STATIC_ALLOC
     void *buf1 = spi_bus_dma_memory_alloc(LCD_HOST, draw_buffer_sz, 0);
     assert(buf1);
     void *buf2 = spi_bus_dma_memory_alloc(LCD_HOST, draw_buffer_sz, 0);
     assert(buf2);
+#endif
     // initialize LVGL draw buffers
     lv_display_set_buffers(display, buf1, buf2, draw_buffer_sz, LV_DISPLAY_RENDER_MODE_PARTIAL);
     // associate the mipi panel handle to the display
@@ -313,7 +330,11 @@ void lvgl_app_init(void)
 #endif
 
     ESP_LOGI(TAG, "Create LVGL task");
-    xTaskCreate(example_lvgl_port_task, "LVGL", EXAMPLE_LVGL_TASK_STACK_SIZE, NULL, EXAMPLE_LVGL_TASK_PRIORITY, NULL);
+
+    // 创建任务并绑定到 CPU1
+    BaseType_t task_created = xTaskCreatePinnedToCore(&example_lvgl_port_task, "LVGL", EXAMPLE_LVGL_TASK_STACK_SIZE, NULL, EXAMPLE_LVGL_TASK_PRIORITY, NULL, 1);
+    // 使用 ESP_ERROR_CHECK 检查是否成功创建任务
+    ESP_ERROR_CHECK(task_created == pdPASS ? ESP_OK : ESP_FAIL);
 
     ESP_LOGI(TAG, "Display LVGL Meter Widget");
     // Lock the mutex due to the LVGL APIs are not thread-safe

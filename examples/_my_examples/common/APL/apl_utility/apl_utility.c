@@ -48,8 +48,8 @@ void app_info_dump(void)
         return;
     }
 
-    ESP_LOGI(TAG ,"%" PRIu32 "MB %s flash\n", flash_size / (uint32_t)(1024 * 1024),
+    ESP_LOGI(TAG ,"%" PRIu32 "MB %s flash", flash_size / (uint32_t)(1024 * 1024),
            (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
 
-    ESP_LOGI(TAG ,"Minimum free heap size: %" PRIu32 " bytes\n", esp_get_minimum_free_heap_size());
+    ESP_LOGI(TAG ,"Minimum free heap size: %" PRIu32 " bytes", esp_get_minimum_free_heap_size());
 }
