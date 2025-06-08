@@ -8,24 +8,25 @@
 
 static const char *TAG = "esp32_cam";
 
-#define CAM_PIN_PWDN    46 //power down is not used
+#define CAM_PIN_PWDN    3 //power down is not used
 #define CAM_PIN_RESET   -1 //software reset will be performed
-#define CAM_PIN_XCLK    15
-#define CAM_PIN_SIOD    47
-#define CAM_PIN_SIOC    48
+#define CAM_PIN_XCLK    13
+#define CAM_PIN_SIOD    46
+#define CAM_PIN_SIOC    47
 
-#define CAM_PIN_D7      38
-#define CAM_PIN_D6      37
-#define CAM_PIN_D5      36
-#define CAM_PIN_D4      35
+#define CAM_PIN_D7      41
+#define CAM_PIN_D6      40
+#define CAM_PIN_D5      39
+#define CAM_PIN_D4      38
 #define CAM_PIN_D3      18
 #define CAM_PIN_D2      17
 #define CAM_PIN_D1      16
-#define CAM_PIN_D0      13
-#define CAM_PIN_VSYNC   39
-#define CAM_PIN_HREF    40
-#define CAM_PIN_PCLK    41
+#define CAM_PIN_D0      15
+#define CAM_PIN_VSYNC   20
+#define CAM_PIN_HREF    21
+#define CAM_PIN_PCLK    8
 
+// #define BOARD_ESP32S3_WROOM
 // ESP32S3 (WROOM) PIN Map
 #ifdef BOARD_ESP32S3_WROOM
 #define CAM_PIN_PWDN 38
