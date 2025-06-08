@@ -11,7 +11,7 @@ list(APPEND EXTRA_COMPONENT_DIRS "$ENV{IDF_PATH}/examples/_my_examples/common/AP
 list(APPEND EXTRA_COMPONENT_DIRS "$ENV{IDF_PATH}/examples/_my_examples/common/APL/apl_console_cmd_wifi")
 
 # 能够减少编译时间
-set(COMPONENTS main)
+set(COMPONENTS main esp_psram)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(base_template)
