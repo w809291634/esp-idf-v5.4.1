@@ -180,6 +180,50 @@ static void register_heap(void)
 
 }
 
+/** 'meminfo' command prints free memory in SRAM and PSRAM */
+
+static int mem_info(int argc, char **argv)
+{
+    // 获取内部 SRAM 的剩余内存大小
+    uint32_t sram_free = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
+    
+    // 初始化 PSRAM 剩余内存大小为 0
+    uint32_t psram_free = 0;
+
+#if CONFIG_SPIRAM
+    // 如果启用了 PSRAM，则获取其剩余内存大小
+    psram_free = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+#endif
+
+    // 计算总剩余内存
+    uint32_t total_free = sram_free + psram_free;
+
+    // 打印结果
+    printf("Memory Usage Summary:\n");
+    printf("  Internal SRAM Free:    %8lu KB\n", sram_free / 1024);
+
+#if CONFIG_SPIRAM
+    printf("  External PSRAM Free:   %8lu KB\n", psram_free / 1024);
+#else
+    printf("  External PSRAM Free:   Not Available (PSRAM not enabled)\n");
+#endif
+
+    printf("  Total Free:            %8lu KB (%.1f MB)\n", total_free / 1024, total_free / (1024.0 * 1024.0));
+
+    return 0;
+}
+
+static void register_meminfo(void)
+{
+    const esp_console_cmd_t cmd = {
+        .command = "meminfo",
+        .help = "Show free memory in SRAM and PSRAM",
+        .hint = NULL,
+        .func = &mem_info,
+    };
+    ESP_ERROR_CHECK(esp_console_cmd_register(&cmd));
+}
+
 /** 'tasks' command prints the list of tasks and related information */
 #if WITH_TASKS_INFO
 
