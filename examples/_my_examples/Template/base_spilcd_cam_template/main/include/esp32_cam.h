@@ -9,6 +9,8 @@ extern "C" {
 #include "esp_timer.h"
 
 esp_err_t camera_init(void);
+esp_err_t init_camera(void);
+esp_err_t camera_capture(void);
 esp_err_t jpg_httpd_handler(httpd_req_t *req);
 /* declarations go here */
 
