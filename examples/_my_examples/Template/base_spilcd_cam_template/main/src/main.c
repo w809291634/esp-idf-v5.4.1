@@ -29,8 +29,8 @@ void app_main(void)
     // lvgl_init();
     // app_init();
     init_camera();
+    esp_http_server_init();
     for (;;) {
-        jpg_httpd_handler();
         // camera_capture();
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
