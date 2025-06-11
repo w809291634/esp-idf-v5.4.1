@@ -1,0 +1,112 @@
+menu "Application Configuration"
+
+    menu "Console Options"
+
+        config APP_ENABLE_CONSOLE
+            bool "Enable Console Support"
+            default y
+            help
+                Enable console command line support. This allows the application
+                to accept commands via UART and execute them.
+
+        if APP_ENABLE_CONSOLE
+
+            config CONSOLE_STORE_HISTORY
+                bool "Store command history in flash"
+                default n
+                help
+                    Linenoise line editing library provides functions to save and load
+                    command history. If this option is enabled, initializes a FAT filesystem
+                    and uses it to store command history.
+
+            config CONSOLE_IGNORE_EMPTY_LINES
+                bool "Ignore empty lines inserted into the console"
+                default y
+                help
+                    If an empty line is inserted to the console, the Console can either
+                    ignore empty lines (the example would continue), or break on empty lines
+                    (the example would stop after an empty line).
+
+            config FORCE_SUPPORTS_ESCAPE_SEQ
+                bool "Force support for terminal escape sequences"
+                default y
+                help
+                    Some terminal programs support escape sequences (e.g., ANSI codes)
+                    for color, cursor movement, and screen control. If this option is enabled,
+                    the console will assume the terminal supports these escape sequences,
+                    even if automatic detection fails.
+
+        endif # APP_ENABLE_CONSOLE
+
+    endmenu # "Console Options"
+
+    menu "lvgl Application Configuration"
+
+        choice EXAMPLE_LCD_CONTROLLER
+            prompt "LCD controller model"
+            default EXAMPLE_LCD_CONTROLLER_ILI9341
+            help
+                Select LCD controller model
+
+            config EXAMPLE_LCD_CONTROLLER_ILI9341
+                bool "ILI9341"
+
+            config EXAMPLE_LCD_CONTROLLER_GC9A01
+                bool "GC9A01"
+
+            config EXAMPLE_LCD_CONTROLLER_ST7789
+                bool "ST7789"
+
+        endchoice
+
+        config EXAMPLE_LCD_TOUCH_ENABLED
+            bool "Enable LCD touch"
+            default n
+            help
+                Enable this option if you wish to use display touch. You can select from touch controllers.
+
+        choice EXAMPLE_LCD_TOUCH_CONTROLLER
+            prompt "LCD touch controller model"
+            depends on EXAMPLE_LCD_TOUCH_ENABLED
+            default EXAMPLE_LCD_TOUCH_CONTROLLER_STMPE610
+            help
+                Select LCD touch controller model
+
+            config EXAMPLE_LCD_TOUCH_CONTROLLER_STMPE610
+                bool "STMPE610"
+                help
+                    Touch controller STMPE610 connected via SPI.
+        endchoice
+
+    endmenu
+
+    menu "esp32Cam Configuration"
+
+        config EXAMPLE_BASIC_AUTH
+            bool "Basic Authentication"
+            default n
+            help
+                Basic Authentication is a method for an HTTP user agent (e.g. a web browser)
+                to provide a user name and password when making a request. It is the simplest
+                technique for enforcing access controls to web resources. because it doesn't
+                require cookies, session identifiers, or login pages; rather, it uses standard
+                fields in the HTTP header.
+                Note that, Basic Authentication is not encrypted channel and also easy to retrieve
+                credentials as they are sent in plain text format.
+
+        config EXAMPLE_BASIC_AUTH_USERNAME
+            string "Basic Authenticate User Name"
+            depends on EXAMPLE_BASIC_AUTH
+            default "ESP32"
+            help
+                The client's user name which used for basic authenticate.
+
+        config EXAMPLE_BASIC_AUTH_PASSWORD
+            string "Basic Authenticate Password"
+            depends on EXAMPLE_BASIC_AUTH
+            default "ESP32Webserver"
+            help
+                The client's password which used for basic authenticate.
+
+    endmenu
+endmenu
