@@ -7,4 +7,6 @@ CONSOLE_STORE_HISTORY
 FORCE_SUPPORTS_ESCAPE_SEQ
 2、强制进行转义字符，如果终端不支持的话，可能会出现无法输入的问题，开启后，可以补全和历史
 
+连接 esp32-camera 这个wifi，然后手机中直接可以查看如下网址即可
+http://192.168.4.1/stream
 
