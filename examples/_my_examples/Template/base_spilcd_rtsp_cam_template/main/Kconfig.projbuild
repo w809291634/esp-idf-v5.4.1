@@ -81,32 +81,53 @@ menu "Application Configuration"
     endmenu
 
     menu "esp32Cam Configuration"
-
-        config EXAMPLE_BASIC_AUTH
-            bool "Basic Authentication"
-            default n
+        config ESP_WIFI_SSID
+            string "WiFi STA SSID"
+            default ""
             help
-                Basic Authentication is a method for an HTTP user agent (e.g. a web browser)
-                to provide a user name and password when making a request. It is the simplest
-                technique for enforcing access controls to web resources. because it doesn't
-                require cookies, session identifiers, or login pages; rather, it uses standard
-                fields in the HTTP header.
-                Note that, Basic Authentication is not encrypted channel and also easy to retrieve
-                credentials as they are sent in plain text format.
+            WiFi SSID (network name) to connect to or empty for Off.
 
-        config EXAMPLE_BASIC_AUTH_USERNAME
-            string "Basic Authenticate User Name"
-            depends on EXAMPLE_BASIC_AUTH
-            default "ESP32"
+        config ESP_WIFI_PASSWORD
+            string "WiFi STA Password"
+            default ""
             help
-                The client's user name which used for basic authenticate.
+            WiFi Password if WEP/WPA/WPA2 or empty if Open.
 
-        config EXAMPLE_BASIC_AUTH_PASSWORD
-            string "Basic Authenticate Password"
-            depends on EXAMPLE_BASIC_AUTH
-            default "ESP32Webserver"
+        config ESP_WIFI_AP_SSID
+            string "WiFi AP SSID"
+            default "ESP32-Camera"
             help
-                The client's password which used for basic authenticate.
+            AP SSID (network name) to create or empty for Off.
 
+        config ESP_WIFI_AP_PASSWORD
+            string "WiFi AP Password"
+            default ""
+            help
+            AP password for WPA2 or empty for Open.
+
+        config MAX_STA_CONN
+            int "Maximal STA connections"
+            default 1
+            help
+            Max number of the STA connects to AP.
+
+        config ESP_WIFI_AP_CHANNEL
+            string "WiFi AP Channel"
+            default ""
+            help
+            AP channel for better connection performance.
+
+        config SERVER_IP
+            string "WiFi AP IP Address"
+            default "192.168.4.1"
+            help
+                IP address that the ESP will assign to it's AP interface. You can use this IP to connect to the camera after flashing.
+
+        config ESP_MAXIMUM_RETRY
+            int "Maximum retry"
+            default 5
+            help
+            Set the Maximum retry to avoid station reconnecting to the AP unlimited when the AP is really inexistent.
+            
     endmenu
 endmenu

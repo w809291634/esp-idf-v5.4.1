@@ -61,7 +61,8 @@
       "esp_http_server.h": "c",
       "esp_tls_crypto.h": "c",
       "esp_event.h": "c",
-      "esp_wifi.h": "c"
+      "esp_wifi.h": "c",
+      "random": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,

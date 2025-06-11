@@ -28,8 +28,8 @@ void app_main(void)
     hw_board_init();
     // lvgl_init();
     // app_init();
-    init_camera();
-    esp_http_server_init();
+
+    esp_strem_cam_init();
     for (;;) {
         // camera_capture();
         vTaskDelay(1000 / portTICK_PERIOD_MS);
