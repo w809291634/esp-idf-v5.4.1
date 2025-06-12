@@ -135,7 +135,7 @@ static int restart(int argc, char **argv)
 static void register_restart(void)
 {
     const esp_console_cmd_t cmd = {
-        .command = "restart",
+        .command = "reboot",
         .help = "Software reset of the chip",
         .hint = NULL,
         .func = &restart,

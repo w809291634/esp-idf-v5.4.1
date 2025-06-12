@@ -15,8 +15,8 @@
 #include "esp_log.h"
 
 #include "camera_pin.h"
-#include "app_wifi.h"
 #include "esp_camera.h"
+#include "esp32_cam.h"
 
 #define TEST_ESP_OK(ret) assert(ret == ESP_OK)
 #define TEST_ASSERT_NOT_NULL(ret) assert(ret != NULL)
@@ -90,7 +90,7 @@ static esp_err_t init_camera(uint32_t xclk_freq_hz, pixformat_t pixel_format, fr
     return ret;
 }
 
-void esp_strem_cam_init(void)
+void esp_cam_stream_init(void)
 {
     app_wifi_main();
 
