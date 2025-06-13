@@ -19,7 +19,7 @@
 void app_init(void)
 {
     app_info_dump();
-    // led_pin_init();
+    led_pin_init();
     // lvgl_init();
     esp_cam_stream_init();
 }

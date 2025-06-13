@@ -61,16 +61,6 @@ static void initialize_filesystem(void)
 #define HISTORY_PATH NULL
 #endif // CONFIG_CONSOLE_STORE_HISTORY
 
-static void initialize_nvs(void)
-{
-    esp_err_t err = nvs_flash_init();
-    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK( nvs_flash_erase() );
-        err = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(err);
-}
-
 static void apl_console_task(void *pvParameter)
 {
     /* Prompt to be printed before each line.
@@ -128,8 +118,6 @@ static void apl_console_task(void *pvParameter)
 
 void apl_console_init(void)
 {
-    initialize_nvs();
-
 #if CONFIG_CONSOLE_STORE_HISTORY
     // 需要 建立分区storage，用来建立文件系统，这里默认关闭掉
     // 官方示例默认打开

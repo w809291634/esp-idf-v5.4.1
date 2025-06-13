@@ -5,6 +5,8 @@
 #include "esp_system.h"
 #include "apl_console.h"
 #include "apl_utility.h"
+#include "nvs.h"
+#include "nvs_flash.h"
 
 #ifdef CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS
 volatile unsigned long CPU_RunTime = 0UL;
@@ -75,11 +77,22 @@ void setupCpuUsageMonitor(void)
 }
 #endif
 
+static void initialize_nvs(void)
+{
+    esp_err_t err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK( nvs_flash_erase() );
+        err = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(err);
+}
+
 /**
  * This function will initial STM32 board.
  */
 void hw_board_init(void)
 {
+    initialize_nvs();
 #ifdef CONFIG_APP_ENABLE_CONSOLE
     apl_console_init();
 #endif

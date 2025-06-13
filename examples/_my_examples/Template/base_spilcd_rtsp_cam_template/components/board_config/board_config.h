@@ -2,10 +2,10 @@
 #define __BOARD_CONFIG_H__
 
 /* LED config  */
-#define BOARD_CONFIG_HAL_LED0_GPIO        4
-#define BOARD_CONFIG_HAL_LED0_ACTIVATE    0
-#define BOARD_CONFIG_HAL_LED1_GPIO        5
-#define BOARD_CONFIG_HAL_LED1_ACTIVATE    0
+// #define BOARD_CONFIG_HAL_LED0_GPIO        4
+// #define BOARD_CONFIG_HAL_LED0_ACTIVATE    0
+// #define BOARD_CONFIG_HAL_LED1_GPIO        5
+// #define BOARD_CONFIG_HAL_LED1_ACTIVATE    0
 
 /* KEY HAL */
 //#define BOARD_CONFIG_HAL_KEY0_PORT        E
