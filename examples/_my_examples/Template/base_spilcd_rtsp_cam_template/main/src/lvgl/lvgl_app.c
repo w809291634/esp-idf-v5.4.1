@@ -44,6 +44,8 @@ static const char *TAG = "lvgl_app";
 #define EXAMPLE_LCD_BK_LIGHT_ON_LEVEL  1
 #define EXAMPLE_LCD_BK_LIGHT_OFF_LEVEL !EXAMPLE_LCD_BK_LIGHT_ON_LEVEL
 
+#ifdef CONFIG_LCD_SPI_USE_IOMUX_PINS
+// 标准 IO MUX 管脚
 #define EXAMPLE_PIN_NUM_SCLK           GPIO_NUM_12
 #define EXAMPLE_PIN_NUM_MOSI           GPIO_NUM_11
 #define EXAMPLE_PIN_NUM_MISO           GPIO_NUM_13
@@ -51,6 +53,18 @@ static const char *TAG = "lvgl_app";
 #define EXAMPLE_PIN_NUM_LCD_RST        GPIO_NUM_5
 #define EXAMPLE_PIN_NUM_LCD_CS         GPIO_NUM_10
 #define EXAMPLE_PIN_NUM_BK_LIGHT       GPIO_NUM_6
+
+#define EXAMPLE_PIN_NUM_TOUCH_CS       -1
+#else
+// GPIO 交换矩阵 任意管脚 , 需要 SPICOMMON_BUSFLAG_GPIO_PINS 标记
+#define EXAMPLE_PIN_NUM_SCLK           GPIO_NUM_1
+#define EXAMPLE_PIN_NUM_MOSI           GPIO_NUM_2
+#define EXAMPLE_PIN_NUM_MISO           -1
+#define EXAMPLE_PIN_NUM_LCD_DC         GPIO_NUM_47
+#define EXAMPLE_PIN_NUM_LCD_RST        GPIO_NUM_21
+#define EXAMPLE_PIN_NUM_LCD_CS         GPIO_NUM_20
+#define EXAMPLE_PIN_NUM_BK_LIGHT       GPIO_NUM_19
+#endif
 
 #define EXAMPLE_PIN_NUM_TOUCH_CS       -1
 
@@ -69,8 +83,9 @@ static const char *TAG = "lvgl_app";
 #define EXAMPLE_LCD_CMD_BITS           8
 #define EXAMPLE_LCD_PARAM_BITS         8
 
-#define EXAMPLE_LVGL_DRAW_BUF_LINES    130 // number of display lines in each draw buffer
+#define EXAMPLE_LVGL_DRAW_BUF_LINES    60 // number of display lines in each draw buffer
                                             // 越大 lvgl 计算时间越短，默认20,越大速度快很多
+                                            // 与 wifi AP 一起使用时，这里SRAM 不能够使用太多，会导致 wifi 无法连接成功，这里可以设置到 60 
 #define EXAMPLE_LVGL_TICK_PERIOD_MS    2
 #define EXAMPLE_LVGL_TASK_MAX_DELAY_MS 500
 #define EXAMPLE_LVGL_TASK_MIN_DELAY_MS 1
@@ -208,6 +223,9 @@ void lvgl_init(void)
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
         .max_transfer_sz = EXAMPLE_LCD_H_RES * 80 * sizeof(uint16_t),
+#ifndef CONFIG_LCD_SPI_USE_IOMUX_PINS
+        .flags = SPICOMMON_BUSFLAG_GPIO_PINS,
+#endif
     };
     ESP_ERROR_CHECK(spi_bus_initialize(LCD_HOST, &buscfg, SPI_DMA_CH_AUTO));
 

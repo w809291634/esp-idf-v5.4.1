@@ -62,7 +62,9 @@
       "esp_tls_crypto.h": "c",
       "esp_event.h": "c",
       "esp_wifi.h": "c",
-      "random": "c"
+      "random": "c",
+      "esp32_cam.h": "c",
+      "camera_pin.h": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,

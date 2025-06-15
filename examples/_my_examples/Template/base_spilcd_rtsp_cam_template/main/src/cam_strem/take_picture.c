@@ -90,11 +90,23 @@ static esp_err_t init_camera(uint32_t xclk_freq_hz, pixformat_t pixel_format, fr
     return ret;
 }
 
+static void esp_cam_stream_task(void *arg)
+{
+    camera_fb_t *frame;
+
+    ESP_LOGI(TAG, "Begin capture frame");
+    while (true) {
+        frame = esp_camera_fb_get();
+        if (frame) {
+            xQueueSend(xQueueIFrame, &frame, portMAX_DELAY);
+        }
+    }
+
+}
+
 void esp_cam_stream_init(void)
 {
     app_wifi_main();
-
-    camera_fb_t *frame;
 
     xQueueIFrame = xQueueCreate(2, sizeof(camera_fb_t *));
 
@@ -103,12 +115,8 @@ void esp_cam_stream_init(void)
 
     TEST_ESP_OK(start_stream_server(xQueueIFrame, true));
 
-    ESP_LOGI(TAG, "Begin capture frame");
-
-    while (true) {
-        frame = esp_camera_fb_get();
-        if (frame) {
-            xQueueSend(xQueueIFrame, &frame, portMAX_DELAY);
-        }
-    }
+    // 创建任务并绑定到 CPU1
+    BaseType_t task_created = xTaskCreatePinnedToCore(&esp_cam_stream_task, "LVGL", 6144, NULL, 5, NULL, 1);
+    // 使用 ESP_ERROR_CHECK 检查是否成功创建任务
+    ESP_ERROR_CHECK(task_created == pdPASS ? ESP_OK : ESP_FAIL);
 }

@@ -20,7 +20,7 @@ void app_init(void)
 {
     app_info_dump();
     led_pin_init();
-    // lvgl_init();
+    lvgl_init();
     esp_cam_stream_init();
 }
 
@@ -28,10 +28,4 @@ void app_main(void)
 {
     hw_board_init();
     app_init();
-    for (;;) {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
-    printf("Restarting now.\n");
-    fflush(stdout);
-    esp_restart();
 }

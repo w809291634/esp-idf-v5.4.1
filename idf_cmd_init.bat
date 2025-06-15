@@ -15,7 +15,6 @@ set IDF_PYTHON=%IDF_TOOLS_PATH%\python_env\idf5.4_py3.11_env\Scripts\python.exe
 set IDF_GIT=%IDF_TOOLS_PATH%/tools/idf-git/2.39.2/cmd/git.exe
 :: 编译加速 
 set IDF_CCACHE_ENABLE=1
- 
 ::::::::: 配置 :::::::::
 
 if "%IDF_TOOLS_PATH%" == "" (

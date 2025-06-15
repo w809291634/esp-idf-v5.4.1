@@ -162,7 +162,7 @@ void apl_console_init(void)
     }
 
     // 创建任务并绑定到 CPU1
-    BaseType_t task_created = xTaskCreatePinnedToCore(&apl_console_task, "apl_console", 4096, NULL, 20, NULL, 1);
+    BaseType_t task_created = xTaskCreatePinnedToCore(&apl_console_task, "apl_console", 4096, NULL, 10, NULL, 1);
     // 使用 ESP_ERROR_CHECK 检查是否成功创建任务
     ESP_ERROR_CHECK(task_created == pdPASS ? ESP_OK : ESP_FAIL);
 }
