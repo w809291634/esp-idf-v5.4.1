@@ -18,6 +18,31 @@
 #include "esp_camera.h"
 #include "esp32_cam.h"
 
+#include "esp_lcd_panel_io.h"
+#include "esp_lcd_panel_vendor.h"
+#include "esp_lcd_panel_ops.h"
+#include "driver/gpio.h"
+#include "driver/spi_master.h"
+#include "lvgl.h"
+
+#if CONFIG_EXAMPLE_LCD_CONTROLLER_ILI9341
+#include "esp_lcd_ili9341.h"
+#elif CONFIG_EXAMPLE_LCD_CONTROLLER_GC9A01
+#include "esp_lcd_gc9a01.h"
+#elif CONFIG_EXAMPLE_LCD_CONTROLLER_ST7789
+#include "esp_lcd_panel_st7789.h"
+#endif
+
+#if CONFIG_EXAMPLE_LCD_TOUCH_CONTROLLER_STMPE610
+#include "esp_lcd_touch_stmpe610.h"
+#endif
+
+#define DBG_TAG           "take_picture"
+//#define DBG_LVL           DBG_INFO
+#define DBG_LVL           DBG_LOG
+//#define DBG_LVL           DBG_NODBG
+#include <mydbg.h>          // must after of DBG_LVL, DBG_TAG or other options
+
 #define TEST_ESP_OK(ret) assert(ret == ESP_OK)
 #define TEST_ASSERT_NOT_NULL(ret) assert(ret != NULL)
 
@@ -90,18 +115,68 @@ static esp_err_t init_camera(uint32_t xclk_freq_hz, pixformat_t pixel_format, fr
     return ret;
 }
 
+#define EXAMPLE_LCD_H_RES              240
+#define EXAMPLE_LVGL_DRAW_BUF_LINES    240
+
+#define DRAW_BUFFER_SIZE    (size_t)(EXAMPLE_LCD_H_RES * EXAMPLE_LVGL_DRAW_BUF_LINES * sizeof(lv_color16_t))
+// 静态分配两个缓冲区，并进行对齐处理（适用于DMA）
+static uint8_t DRAM_ATTR buf1[DRAW_BUFFER_SIZE] __attribute__((aligned(16)));
+// 检查是否对齐（可选）
+_Static_assert(((uintptr_t)buf1 % 16) == 0, "buf1 not aligned");
+
 static void esp_cam_stream_task(void *arg)
 {
     camera_fb_t *frame;
+    uint8_t *out_buf;
+    uint32_t out_length;
+    extern esp_lcd_panel_handle_t panel_handle;
 
+    // 用于计算帧率
+    static uint32_t frame_count = 0;
+    static uint32_t start_time = 0;
+    uint32_t current_time;
+    
     ESP_LOGI(TAG, "Begin capture frame");
+
+    // 初始化计时器
+    start_time = pdTICKS_TO_MS(xTaskGetTickCount());
     while (true) {
         frame = esp_camera_fb_get();
         if (frame) {
+            // ESP_LOGI(TAG, "width:%d height:%d",frame->width,frame->height);
+#if 1
             xQueueSend(xQueueIFrame, &frame, portMAX_DELAY);
+#else
+
+            if(img_jpeg_decode(3, 0,frame->buf,frame->len,&out_buf,&out_length)==0){
+                // ESP_LOGI(TAG, "out_buf:%p out_length:%ld",out_buf,out_length);
+
+                // because SPI LCD is big-endian, we need to swap the RGB bytes order
+                lv_draw_sw_rgb565_swap(out_buf, out_length/2);
+                memcpy(&buf1,out_buf,DRAW_BUFFER_SIZE);
+
+                // // copy a buffer's content to a specific area of the display
+                esp_lcd_panel_draw_bitmap(panel_handle,0,0,240,240, &buf1);
+                
+                heap_caps_free(out_buf);
+            }
+            esp_camera_fb_return(frame);
+#endif
+            // 帧计数增加
+            frame_count++;
+            // 获取当前时间（单位：ms）
+            current_time = pdTICKS_TO_MS(xTaskGetTickCount());
+            // 每过一秒打印一次帧率
+            if ((current_time - start_time) >= 1000) {
+                float fps = (float)frame_count / ((current_time - start_time) / 1000.0f);
+                ESP_LOGI(TAG, "FPS: %.2f", fps);
+                // 重置计数器
+                frame_count = 0;
+                start_time = current_time;
+            }
         }
     }
-
+    vTaskDelete(NULL);
 }
 
 void esp_cam_stream_init(void)
@@ -111,12 +186,16 @@ void esp_cam_stream_init(void)
     xQueueIFrame = xQueueCreate(2, sizeof(camera_fb_t *));
 
     /* It is recommended to use a camera sensor with JPEG compression to maximize the speed */
-    TEST_ESP_OK(init_camera(10000000, PIXFORMAT_JPEG, FRAMESIZE_QVGA, 2));
+    // FRAMESIZE_HQVGA,    // 240x176
+    // FRAMESIZE_240X240,  // 240x240
+    // FRAMESIZE_QVGA,     // 320x240
+    // FRAMESIZE_320X320,  // 320x320
+    TEST_ESP_OK(init_camera(10000000, PIXFORMAT_JPEG, FRAMESIZE_240X240, 2));
 
     TEST_ESP_OK(start_stream_server(xQueueIFrame, true));
 
     // 创建任务并绑定到 CPU1
-    BaseType_t task_created = xTaskCreatePinnedToCore(&esp_cam_stream_task, "LVGL", 6144, NULL, 5, NULL, 1);
+    BaseType_t task_created = xTaskCreatePinnedToCore(&esp_cam_stream_task, "cam_stream", 6144, NULL, 5, NULL, 1);
     // 使用 ESP_ERROR_CHECK 检查是否成功创建任务
     ESP_ERROR_CHECK(task_created == pdPASS ? ESP_OK : ESP_FAIL);
 }

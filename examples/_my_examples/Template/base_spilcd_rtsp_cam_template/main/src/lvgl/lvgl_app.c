@@ -206,6 +206,7 @@ static void example_lvgl_port_task(void *arg)
     }
 }
 
+esp_lcd_panel_handle_t panel_handle = NULL;
 void lvgl_init(void)
 {
     ESP_LOGI(TAG, "Turn off LCD backlight");
@@ -243,7 +244,7 @@ void lvgl_init(void)
     // Attach the LCD to the SPI bus
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_HOST, &io_config, &io_handle));
 
-    esp_lcd_panel_handle_t panel_handle = NULL;
+    // esp_lcd_panel_handle_t panel_handle = NULL;
     esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num = EXAMPLE_PIN_NUM_LCD_RST,
         .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_RGB,  // 这里应该选择 RGB，与LVGL同步 而不是 LCD_RGB_ELEMENT_ORDER_BGR
@@ -272,7 +273,7 @@ void lvgl_init(void)
 
     ESP_LOGI(TAG, "Turn on LCD backlight");
     gpio_set_level(EXAMPLE_PIN_NUM_BK_LIGHT, EXAMPLE_LCD_BK_LIGHT_ON_LEVEL);
-
+#if 0
     ESP_LOGI(TAG, "Initialize LVGL library");
     lv_init();
 
@@ -359,7 +360,8 @@ void lvgl_init(void)
 
     ESP_LOGI(TAG, "Display LVGL Meter Widget");
     // Lock the mutex due to the LVGL APIs are not thread-safe
-    _lock_acquire(&lvgl_api_lock);
-    example_lvgl_demo_ui(display);
-    _lock_release(&lvgl_api_lock);
+    // _lock_acquire(&lvgl_api_lock);
+    // example_lvgl_demo_ui(display);
+    // _lock_release(&lvgl_api_lock);
+#endif
 }
