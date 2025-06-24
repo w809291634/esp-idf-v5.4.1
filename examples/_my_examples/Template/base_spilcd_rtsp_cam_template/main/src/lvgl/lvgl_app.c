@@ -60,10 +60,10 @@ static const char *TAG = "lvgl_app";
 #define EXAMPLE_PIN_NUM_SCLK           GPIO_NUM_1
 #define EXAMPLE_PIN_NUM_MOSI           GPIO_NUM_2
 #define EXAMPLE_PIN_NUM_MISO           -1
-#define EXAMPLE_PIN_NUM_LCD_DC         GPIO_NUM_47
-#define EXAMPLE_PIN_NUM_LCD_RST        GPIO_NUM_21
-#define EXAMPLE_PIN_NUM_LCD_CS         GPIO_NUM_20
-#define EXAMPLE_PIN_NUM_BK_LIGHT       GPIO_NUM_19
+#define EXAMPLE_PIN_NUM_LCD_DC         GPIO_NUM_42
+#define EXAMPLE_PIN_NUM_LCD_RST        GPIO_NUM_41
+#define EXAMPLE_PIN_NUM_LCD_CS         GPIO_NUM_47
+#define EXAMPLE_PIN_NUM_BK_LIGHT       GPIO_NUM_21
 #endif
 
 #define EXAMPLE_PIN_NUM_TOUCH_CS       -1
