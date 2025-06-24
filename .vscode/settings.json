@@ -85,7 +85,8 @@
       "bit": "c",
       "chrono": "c",
       "compare": "c",
-      "mutex": "c"
+      "mutex": "c",
+      "esp_flash.h": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,
