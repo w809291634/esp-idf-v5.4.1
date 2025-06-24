@@ -2,9 +2,9 @@
 
 ::::::::: 配置 :::::::::
 :: 设置你的ESP-IDF项目根目录（或作为参数传入）,不能有空格
-set PROJECT_PATH=F:\esp32_8266_files\esp-idf-v5.4.1\examples\_my_examples\Template\base_spilcd_rtsp_cam_template
+set PROJECT_PATH=D:\esp32_8266_files\esp-idf-v5.4.1\examples\_my_examples\Template\base_spilcd_rtsp_cam_template
 :: 默认串口号和波特率
-set DEFAULT_COM=COM50
+set DEFAULT_COM=COM6
 set DEFAULT_FBPS=460800
 set DEFAULT_FBPS=2000000
 set DEFAULT_MBPS=115200

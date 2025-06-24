@@ -8,9 +8,9 @@
 :: 2. try to use environment variable IDF_PATH to query configuration managed by idf-env
 :: 3. try to use local working directory to query configuration managed by idf-env
 ::::::::: 配置 :::::::::
-set IDF_PATH=F:\esp32_8266_files\esp-idf-v5.4.1
+set IDF_PATH=D:\esp32_8266_files\esp-idf-v5.4.1
 
-set IDF_TOOLS_PATH=F:\esp32_8266_files\esp-idf-v5.4.1\esp-idf-tools_for_idf_v5_4_1
+set IDF_TOOLS_PATH=D:\esp32_8266_files\esp-idf-v5.4.1\esp-idf-tools_for_idf_v5_4_1
 set IDF_PYTHON=%IDF_TOOLS_PATH%\python_env\idf5.4_py3.11_env\Scripts\python.exe
 set IDF_GIT=%IDF_TOOLS_PATH%/tools/idf-git/2.39.2/cmd/git.exe
 :: 编译加速 
