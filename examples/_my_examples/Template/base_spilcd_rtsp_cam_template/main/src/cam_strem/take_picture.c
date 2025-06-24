@@ -82,7 +82,7 @@ static esp_err_t init_camera(uint32_t xclk_freq_hz, pixformat_t pixel_format, fr
         .pixel_format = pixel_format, //YUV422,GRAYSCALE,RGB565,JPEG
         .frame_size = frame_size,    //QQVGA-UXGA, sizes above QVGA are not been recommended when not JPEG format.
 
-        .jpeg_quality = 10, //0-63
+        .jpeg_quality = 10, //0-63,数值越小，图形质量越好，占用空间越大
         .fb_count = fb_count,       // For ESP32/ESP32-S2, if more than one, i2s runs in continuous mode. Use only with JPEG.
         .grab_mode = CAMERA_GRAB_LATEST,
         .fb_location = CAMERA_FB_IN_PSRAM
@@ -169,7 +169,7 @@ static void esp_cam_stream_task(void *arg)
             // 每过一秒打印一次帧率
             if ((current_time - start_time) >= 1000) {
                 float fps = (float)frame_count / ((current_time - start_time) / 1000.0f);
-                ESP_LOGI(TAG, "FPS: %.2f", fps);
+                ESP_LOGI(TAG, "FPS: %.2f frame: %zu bytes", fps, frame->len);
                 // 重置计数器
                 frame_count = 0;
                 start_time = current_time;
@@ -190,7 +190,7 @@ void esp_cam_stream_init(void)
     // FRAMESIZE_240X240,  // 240x240
     // FRAMESIZE_QVGA,     // 320x240
     // FRAMESIZE_320X320,  // 320x320
-    TEST_ESP_OK(init_camera(10000000, PIXFORMAT_JPEG, FRAMESIZE_240X240, 2));
+    TEST_ESP_OK(init_camera(48 * 1000000, PIXFORMAT_JPEG, FRAMESIZE_240X240, 2));
 
     TEST_ESP_OK(start_stream_server(xQueueIFrame, true));
 
