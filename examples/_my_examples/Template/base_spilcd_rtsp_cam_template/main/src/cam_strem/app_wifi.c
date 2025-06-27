@@ -110,6 +110,7 @@ static void wifi_init_softap(esp_netif_t * netif)
     if (strlen(EXAMPLE_ESP_WIFI_AP_CHANNEL)) {
         int channel;
         sscanf(EXAMPLE_ESP_WIFI_AP_CHANNEL, "%d", &channel);
+        ESP_LOGI(TAG, "channel:%d",channel);
         wifi_config.ap.channel = channel;
     }
 
