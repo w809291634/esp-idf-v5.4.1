@@ -150,12 +150,12 @@ static void example_lvgl_port_task(void *arg)
 esp_lcd_panel_handle_t panel_handle = NULL;
 void lvgl_init(void)
 {
-    ESP_LOGI(TAG, "Turn off LCD backlight");
-    gpio_config_t bk_gpio_config = {
-        .mode = GPIO_MODE_OUTPUT,
-        .pin_bit_mask = 1ULL << EXAMPLE_PIN_NUM_BK_LIGHT
-    };
-    ESP_ERROR_CHECK(gpio_config(&bk_gpio_config));
+    // ESP_LOGI(TAG, "Turn off LCD backlight");
+    // gpio_config_t bk_gpio_config = {
+    //     .mode = GPIO_MODE_OUTPUT,
+    //     .pin_bit_mask = 1ULL << EXAMPLE_PIN_NUM_BK_LIGHT
+    // };
+    // ESP_ERROR_CHECK(gpio_config(&bk_gpio_config));
 
     ESP_LOGI(TAG, "Initialize SPI bus");
     spi_bus_config_t buscfg = {
@@ -213,8 +213,8 @@ void lvgl_init(void)
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
 
     ESP_LOGI(TAG, "Turn on LCD backlight");
-    gpio_set_level(EXAMPLE_PIN_NUM_BK_LIGHT, EXAMPLE_LCD_BK_LIGHT_ON_LEVEL);
-#if USE_CAM_MODE!=1
+    // gpio_set_level(EXAMPLE_PIN_NUM_BK_LIGHT, EXAMPLE_LCD_BK_LIGHT_ON_LEVEL);
+
     ESP_LOGI(TAG, "Initialize LVGL library");
     lv_init();
 
@@ -302,7 +302,7 @@ void lvgl_init(void)
     ESP_LOGI(TAG, "Display LVGL Meter Widget");
     // Lock the mutex due to the LVGL APIs are not thread-safe
     _lock_acquire(&lvgl_api_lock);
-    // example_lvgl_demo_ui(display);
+    example_lvgl_demo_ui(display);
 
     // LV_IMAGE_DECLARE(img_cogwheel_argb);
     // lv_obj_t * img1 = lv_image_create(lv_screen_active());
@@ -314,5 +314,5 @@ void lvgl_init(void)
     // lv_obj_align_to(img2, img1, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
 
     _lock_release(&lvgl_api_lock);
-#endif
+
 }

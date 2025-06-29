@@ -29,13 +29,13 @@ extern "C" {
 #define EXAMPLE_PIN_NUM_TOUCH_CS       -1
 #else
 // GPIO 交换矩阵 任意管脚 , 需要 SPICOMMON_BUSFLAG_GPIO_PINS 标记
-#define EXAMPLE_PIN_NUM_SCLK           GPIO_NUM_40
-#define EXAMPLE_PIN_NUM_MOSI           GPIO_NUM_41
+#define EXAMPLE_PIN_NUM_SCLK           GPIO_NUM_1
+#define EXAMPLE_PIN_NUM_MOSI           GPIO_NUM_2
 #define EXAMPLE_PIN_NUM_MISO           -1
-#define EXAMPLE_PIN_NUM_LCD_DC         GPIO_NUM_38
-#define EXAMPLE_PIN_NUM_LCD_RST        GPIO_NUM_42
-#define EXAMPLE_PIN_NUM_LCD_CS         GPIO_NUM_39
-#define EXAMPLE_PIN_NUM_BK_LIGHT       -1
+#define EXAMPLE_PIN_NUM_LCD_DC         GPIO_NUM_42
+#define EXAMPLE_PIN_NUM_LCD_RST        GPIO_NUM_41
+#define EXAMPLE_PIN_NUM_LCD_CS         GPIO_NUM_47
+#define EXAMPLE_PIN_NUM_BK_LIGHT       GPIO_NUM_21
 #endif
 
 #define EXAMPLE_PIN_NUM_TOUCH_CS       -1
