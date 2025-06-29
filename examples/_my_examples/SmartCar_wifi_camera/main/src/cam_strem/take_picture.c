@@ -23,20 +23,6 @@
 #include "esp_lcd_panel_ops.h"
 #include "driver/gpio.h"
 #include "driver/spi_master.h"
-#include "lvgl.h"
-#include "lvgl_app.h"
-
-#if CONFIG_EXAMPLE_LCD_CONTROLLER_ILI9341
-#include "esp_lcd_ili9341.h"
-#elif CONFIG_EXAMPLE_LCD_CONTROLLER_GC9A01
-#include "esp_lcd_gc9a01.h"
-#elif CONFIG_EXAMPLE_LCD_CONTROLLER_ST7789
-#include "esp_lcd_panel_st7789.h"
-#endif
-
-#if CONFIG_EXAMPLE_LCD_TOUCH_CONTROLLER_STMPE610
-#include "esp_lcd_touch_stmpe610.h"
-#endif
 
 #define DBG_TAG           "take_picture"
 //#define DBG_LVL           DBG_INFO
@@ -116,42 +102,9 @@ static esp_err_t init_camera(uint32_t xclk_freq_hz, pixformat_t pixel_format, fr
     return ret;
 }
 
-#if USE_CAM_MODE==1
-#define EXAMPLE_LCD_H_RES              240
-#define EXAMPLE_LVGL_DRAW_BUF_LINES1    240
-#define DRAW_BUFFER_SIZE1    (size_t)(EXAMPLE_LCD_H_RES * EXAMPLE_LVGL_DRAW_BUF_LINES1 * sizeof(lv_color16_t))
-// 静态分配两个缓冲区，并进行对齐处理（适用于DMA）
-static uint8_t DRAM_ATTR buf1[DRAW_BUFFER_SIZE1] __attribute__((aligned(16)));
-// 检查是否对齐（可选）
-_Static_assert(((uintptr_t)buf1 % 16) == 0, "buf1 not aligned");
-#elif USE_CAM_MODE==2
-#include "lvgl.h"
-extern _lock_t lvgl_api_lock;
-    // 假设你的 out_buf 是 RGB565 格式，且分辨率为 240x240
-    #define  IMG_WIDTH  EXAMPLE_LCD_H_RES
-    #define  IMG_HEIGHT  EXAMPLE_LVGL_DRAW_BUF_LINES1
-
-    // 创建 LVGL 图像描述符
-    static lv_img_dsc_t img_dsc = {
-        .header = {
-            .w = IMG_WIDTH,
-            .h = IMG_HEIGHT,
-            .cf = LV_COLOR_FORMAT_RGB565, // 默认 RGB565
-        },
-        .data_size = IMG_WIDTH * IMG_HEIGHT * sizeof(lv_color16_t), // RGB565: 2 bytes per pixel
-    };
-#elif USE_CAM_MODE==3
-extern uint8_t DRAM_ATTR lvgl_draw_buf1[DRAW_BUFFER_SIZE] __attribute__((aligned(16)));
-extern uint8_t DRAM_ATTR lvgl_draw_buf2[DRAW_BUFFER_SIZE] __attribute__((aligned(16)));
-
-#endif
-
 static void esp_cam_stream_task(void *arg)
 {
     camera_fb_t *frame;
-    uint8_t *out_buf;
-    uint32_t out_length;
-    extern esp_lcd_panel_handle_t panel_handle;
 
     // 用于计算帧率
     static uint32_t frame_count = 0;
@@ -159,93 +112,12 @@ static void esp_cam_stream_task(void *arg)
     uint32_t current_time;
     
     ESP_LOGI(TAG, "Begin capture frame");
-#if USE_CAM_MODE==2
-    _lock_acquire(&lvgl_api_lock);  
-    img_dsc.data = (const uint8_t *)out_buf;
-    lv_obj_t *img = lv_image_create(lv_screen_active());
-    lv_obj_align(img, LV_ALIGN_CENTER, 0, 0); // 居中显示
-    _lock_release(&lvgl_api_lock);
-#endif
-
     // 初始化计时器
     start_time = pdTICKS_TO_MS(xTaskGetTickCount());
     while (true) {
         frame = esp_camera_fb_get();
         if (frame) {
-            // ESP_LOGI(TAG, "width:%d height:%d",frame->width,frame->height);
-#if USE_CAM_MODE==0
             xQueueSend(xQueueIFrame, &frame, portMAX_DELAY);
-#elif USE_CAM_MODE==1
-            start_time = pdTICKS_TO_MS(xTaskGetTickCount());
-            if(img_jpeg_decode(3, 0,frame->buf,frame->len,&out_buf,&out_length)==0){
-                // 测试解析 一帧 240*240 的时间约为 43 ms, 约为23帧
-                ESP_LOGI(TAG, "decode use time:%ld", pdTICKS_TO_MS(xTaskGetTickCount()) - start_time);
-                ESP_LOGI(TAG, "out_buf:%p out_length:%ld",out_buf,out_length);
-
-                // because SPI LCD is big-endian, we need to swap the RGB bytes order
-                lv_draw_sw_rgb565_swap(out_buf, out_length/2);
-                memcpy(buf1,out_buf,DRAW_BUFFER_SIZE1);
-
-                start_time = pdTICKS_TO_MS(xTaskGetTickCount());
-                // copy a buffer's content to a specific area of the display
-                // 80mhz的话，用时极其短。
-                esp_lcd_panel_draw_bitmap(panel_handle,0,0,240,240, buf1);
-                ESP_LOGI(TAG, "draw use time:%ld", pdTICKS_TO_MS(xTaskGetTickCount()) - start_time);
-                
-                heap_caps_free(out_buf);
-            }
-            esp_camera_fb_return(frame);
-#elif USE_CAM_MODE==2
-            start_time = pdTICKS_TO_MS(xTaskGetTickCount());
-            if(img_jpeg_decode(3, 0,frame->buf,frame->len,&out_buf,&out_length)==0){
-                // 测试解析 一帧 240*240 的时间约为 43 ms, 约为23帧
-                ESP_LOGI(TAG, "decode use time:%ld", pdTICKS_TO_MS(xTaskGetTickCount()) - start_time);
-                ESP_LOGI(TAG, "out_buf:%p out_length:%ld",out_buf,out_length);
-                start_time = pdTICKS_TO_MS(xTaskGetTickCount());
-                // 效率太低了
-                _lock_acquire(&lvgl_api_lock);
-                img_dsc.data = (const uint8_t *)out_buf;
-                lv_img_set_src(img, &img_dsc);
-                lv_task_handler();
-                _lock_release(&lvgl_api_lock);
-                ESP_LOGI(TAG, "draw use time:%ld", pdTICKS_TO_MS(xTaskGetTickCount()) - start_time);
-                
-                heap_caps_free(out_buf);
-            }
-            esp_camera_fb_return(frame);
-#elif USE_CAM_MODE==3
-            /* 获取lvgl的显示buffer */
-            start_time = pdTICKS_TO_MS(xTaskGetTickCount());
-            if(img_jpeg_decode(3, 0,frame->buf,frame->len,&out_buf,&out_length)==0){
-                // 测试解析 一帧 240*240 的时间约为 43 ms, 约为23帧
-                ESP_LOGI(TAG, "decode use time:%ld", pdTICKS_TO_MS(xTaskGetTickCount()) - start_time);
-                ESP_LOGI(TAG, "out_buf:%p out_length:%ld",out_buf,out_length);
-
-                // because SPI LCD is big-endian, we need to swap the RGB bytes order
-                lv_draw_sw_rgb565_swap(out_buf, out_length/2);      // 像素数量
-                static uint8_t buf_switch = 0;
-                for (int y = 0; y < 240; y += EXAMPLE_LVGL_DRAW_BUF_LINES) {
-                    ESP_LOGI(TAG, "out_buf:%p", out_buf+(size_t)(EXAMPLE_LCD_H_RES * y * sizeof(lv_color16_t)));
-                    if(buf_switch%2 == 0)
-                        memcpy(lvgl_draw_buf1,out_buf+(size_t)(EXAMPLE_LCD_H_RES * y * sizeof(lv_color16_t)),DRAW_BUFFER_SIZE);
-                    else
-                        memcpy(lvgl_draw_buf2,out_buf+(size_t)(EXAMPLE_LCD_H_RES * y * sizeof(lv_color16_t)),DRAW_BUFFER_SIZE);
-                    start_time = pdTICKS_TO_MS(xTaskGetTickCount());
-                    // copy a buffer's content to a specific area of the display
-                    // 80mhz的话，用时极其短。
-                    // x宽度240，高度也是显示240行，需要分段 拷贝到 buf1 ，最后显示到一帧里面
-                    if(buf_switch%2 == 0)
-                        esp_lcd_panel_draw_bitmap(panel_handle,0,y,240,y+EXAMPLE_LVGL_DRAW_BUF_LINES, lvgl_draw_buf1);  // 末行和末列会减1
-                    else
-                        esp_lcd_panel_draw_bitmap(panel_handle,0,y,240,y+EXAMPLE_LVGL_DRAW_BUF_LINES, lvgl_draw_buf2);  // 末行和末列会减1
-                    ESP_LOGI(TAG, "draw use time:%ld y:%d", pdTICKS_TO_MS(xTaskGetTickCount()) - start_time,y);
-                    buf_switch ++ ;
-                }
-                heap_caps_free(out_buf);
-            }
-            esp_camera_fb_return(frame);
-
-#endif
             // 帧计数增加
             frame_count++;
             // 获取当前时间（单位：ms）
