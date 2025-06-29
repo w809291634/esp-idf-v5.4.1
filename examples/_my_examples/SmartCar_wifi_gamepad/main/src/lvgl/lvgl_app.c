@@ -208,7 +208,7 @@ void lvgl_init(void)
     ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));
 #endif
     ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel_handle, false, false));
-
+    ESP_ERROR_CHECK(esp_lcd_panel_invert_color(panel_handle, true));    // 部分芯片这里要设置 反转，并且还和 LCD_RGB_ELEMENT_ORDER_RGB/BGR 有关
     // user can flush pre-defined pattern to the screen before we turn on the screen or backlight
     ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
 
