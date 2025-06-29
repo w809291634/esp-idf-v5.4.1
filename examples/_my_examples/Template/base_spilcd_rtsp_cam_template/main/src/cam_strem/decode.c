@@ -125,7 +125,7 @@ static int jpg_decode(uint8_t decoder_index, decode_type_t type, uint8_t *jpg, u
 
     decode(jpg, length, rgb_buf);
     *out_buf = rgb_buf;
-    *out_length = img_w * img_h * 3;
+    *out_length = img_w * img_h * 2;
     // free(jpg_buf);
     // heap_caps_free(rgb_buf);
     return 0;

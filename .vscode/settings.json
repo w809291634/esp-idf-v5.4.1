@@ -86,7 +86,10 @@
       "chrono": "c",
       "compare": "c",
       "mutex": "c",
-      "esp_flash.h": "c"
+      "esp_flash.h": "c",
+      "spi_master.h": "c",
+      "esp_err.h": "c",
+      "esp_lcd_touch_stmpe610.h": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,
