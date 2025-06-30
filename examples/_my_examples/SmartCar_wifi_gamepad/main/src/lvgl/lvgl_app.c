@@ -302,7 +302,7 @@ void lvgl_init(void)
     ESP_LOGI(TAG, "Display LVGL Meter Widget");
     // Lock the mutex due to the LVGL APIs are not thread-safe
     _lock_acquire(&lvgl_api_lock);
-    example_lvgl_demo_ui(display);
+    // example_lvgl_demo_ui(display);
 
     // LV_IMAGE_DECLARE(img_cogwheel_argb);
     // lv_obj_t * img1 = lv_image_create(lv_screen_active());

@@ -263,20 +263,13 @@ static void esp_cam_stream_task(void *arg)
     vTaskDelete(NULL);
 }
 
-void esp_cam_stream_init(void)
+void esp_cam_client_stream_init(void)
 {
     app_wifi_main();
 
     xQueueIFrame = xQueueCreate(2, sizeof(camera_fb_t *));
 
-    /* It is recommended to use a camera sensor with JPEG compression to maximize the speed */
-    // FRAMESIZE_HQVGA,    // 240x176
-    // FRAMESIZE_240X240,  // 240x240
-    // FRAMESIZE_QVGA,     // 320x240
-    // FRAMESIZE_320X320,  // 320x320
-    TEST_ESP_OK(init_camera(48 * 1000000, PIXFORMAT_JPEG, FRAMESIZE_240X240, 2));
-
-    TEST_ESP_OK(start_stream_server(xQueueIFrame, true));
+    TEST_ESP_OK(start_stream_client());
 
     // 创建任务并绑定到 CPU1
     BaseType_t task_created = xTaskCreatePinnedToCore(&esp_cam_stream_task, "cam_stream", 6144, NULL, 5, NULL, 1);

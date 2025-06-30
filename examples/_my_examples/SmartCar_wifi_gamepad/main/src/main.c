@@ -20,7 +20,7 @@ void app_init(void)
 {
     led_pin_init();
     lvgl_init();
-    // esp_cam_stream_init();
+    esp_cam_client_stream_init();
 }
 
 void app_main(void)
