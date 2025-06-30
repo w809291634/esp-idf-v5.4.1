@@ -12,9 +12,13 @@
 #include "sdkconfig.h"
 #include "esp_log.h"
 
+// 分隔不同图像帧的唯一标识符
 #define PART_BOUNDARY "123456789000000000000987654321"
+// 设定了响应内容类型为流媒体格式
 static const char *_STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
+// 包含协议要求的边界字符串
 static const char *_STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
+// 定义了每帧图像的HTTP头部信息
 static const char *_STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\nX-Timestamp: %d.%06d\r\n\r\n";
 static QueueHandle_t xQueueFrameI = NULL;
 static bool gReturnFB = true;
@@ -56,12 +60,15 @@ static esp_err_t stream_handler(httpd_req_t *req)
         }
 
         if (res == ESP_OK) {
+            // 发送边界
             res = httpd_resp_send_chunk(req, _STREAM_BOUNDARY, strlen(_STREAM_BOUNDARY));
             if (res == ESP_OK) {
+                // 发送帧头部
                 size_t hlen = snprintf((char *)part_buf, 128, _STREAM_PART, _jpg_buf_len, _timestamp.tv_sec, _timestamp.tv_usec);
                 res = httpd_resp_send_chunk(req, (const char *)part_buf, hlen);
             }
             if (res == ESP_OK) {
+                // 发送实际图像数据
                 res = httpd_resp_send_chunk(req, (const char *)_jpg_buf, _jpg_buf_len);
             }
 
