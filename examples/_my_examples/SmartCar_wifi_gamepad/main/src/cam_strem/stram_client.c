@@ -2,6 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
 #include "esp_log.h"
 #include "esp_http_client.h"
 
@@ -9,7 +12,7 @@
 #define MAX_HTTP_RECV_BUFFER 4096
 
 // 替换为你实际的ESP32 IP地址和路径
-#define STREAM_URL "http://192.168.1.100/stream"
+#define STREAM_URL "http://192.168.4.1/stream"
 
 // 边界字符串（必须与服务器一致）
 #define BOUNDARY "--123456789000000000000987654321"
@@ -111,8 +114,7 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
     return ESP_OK;
 }
 
-esp_err_t start_stream_client(void)
-{
+void http_stream_task(void *pvParameters) {
     esp_http_client_config_t config = {
         .url = STREAM_URL,
         .event_handler = http_event_handler,
@@ -135,7 +137,6 @@ esp_err_t start_stream_client(void)
 
     ESP_LOGI(TAG, "HTTP Stream reader Status = %d, content_length = %d", status_code, content_length);
 
-    // 开始读取响应体
     char *buffer = malloc(MAX_HTTP_RECV_BUFFER);
     if (!buffer) {
         ESP_LOGE(TAG, "Failed to allocate read buffer");
@@ -148,10 +149,15 @@ esp_err_t start_stream_client(void)
     }
 
     free(buffer);
-    return ESP_OK;
 
 error:
     esp_http_client_close(client);
     esp_http_client_cleanup(client);
-    return ESP_FAIL;
+    vTaskDelete(NULL); // 删除当前任务
+}
+
+esp_err_t start_stream_client(void)
+{
+    xTaskCreate(&http_stream_task, "http_stream_task", 8192, NULL, 5, NULL);
+    return ESP_OK;
 }
