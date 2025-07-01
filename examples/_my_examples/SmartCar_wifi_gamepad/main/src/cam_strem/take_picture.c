@@ -119,6 +119,7 @@ static void esp_cam_stream_task(void *arg)
                 start_time = current_time;
             }
         }
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
     vTaskDelete(NULL);
 }
