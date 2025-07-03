@@ -15,7 +15,7 @@
 //#define DBG_LVL           DBG_NODBG
 #include <mydbg.h>          // must after of DBG_LVL, DBG_TAG or other options
 
-#define TAG "HTTP_STREAM_CLIENT"
+#define TAG     DBG_TAG
 #define MAX_HTTP_RECV_BUFFER 4096
 
 // 替换为你实际的ESP32 IP地址和路径
@@ -28,16 +28,21 @@
 
 // 客户端状态上下文
 typedef struct {
-    FILE *jpg_file;
-    int frame_count;
-    int content_length;
-    int bytes_received;
-    int timestamp_sec;
-    int timestamp_usec;
-    bool in_frame;
-    bool in_header;
+    bool in_header;         // 正在处理 收集头部信息
+    bool in_frame;          // 正在处理帧
+
+    // 头部信息 buf 
     char header_buf[MAX_HEADER_LEN];
     int header_len;
+    // 内容长度
+    int content_length;
+    // 时间戳
+    int timestamp_sec;
+    int timestamp_usec;
+
+    // 处理接受的图像数据
+    int frame_count;
+    int bytes_received;
 } stream_ctx_t;
 
 // 解析HTTP头信息
@@ -71,18 +76,23 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
             // 获取分块长度（如果使用分块传输）
             int chunk_len;
             esp_http_client_get_chunk_length(evt->client,&chunk_len);
-            ESP_LOGI(TAG, "Chunk length: %d, Data len: %d", chunk_len, evt->data_len);
-            
-            // 获取内容长度（对于非分块传输）
-            int content_len = esp_http_client_get_content_length(evt->client);
-            ESP_LOGI(TAG, "Content length: %d", content_len);
+            ESP_LOGI(TAG, "\r\nChunk len: %d, Data len: %d", chunk_len, evt->data_len);
             
             const char *data = evt->data;
             size_t data_len = evt->data_len;
             size_t data_processed = 0;
-            
+
+            /* 调试数据 */
+            log_draw("data:\r\n");
+            for (size_t i = 0; i < evt->data_len; i++) {
+                log_draw("%c", data[i]); 
+                if(i>100)break; // 图像数据不打印过多
+            }
+            log_draw("\r\n");
+
             while (data_processed < data_len) {
-                if (!ctx->in_frame) {
+                if (!ctx->in_frame && !ctx->in_header) {
+                    ESP_LOGI(TAG, "Start Collect header information");
                     // 检查边界标记
                     if (data_len - data_processed >= BOUNDARY_STR_LEN &&
                         memcmp(data + data_processed, BOUNDARY_STR, BOUNDARY_STR_LEN) == 0) {
@@ -93,6 +103,7 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
                         memset(ctx->header_buf, 0, sizeof(ctx->header_buf));
                         continue;
                     } else {
+                        ESP_LOGI(TAG, "Skip non-boundary data");
                         // 跳过非边界数据
                         data_processed = data_len;
                         break;
@@ -100,6 +111,7 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
                 }
                 
                 if (ctx->in_header) {
+                    ESP_LOGI(TAG, "Start Collect header information");
                     // 收集头部信息
                     size_t to_copy = MIN(data_len - data_processed, sizeof(ctx->header_buf) - ctx->header_len - 1);
                     if (to_copy > 0) {
@@ -107,27 +119,20 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
                         ctx->header_len += to_copy;
                         data_processed += to_copy;
                         ctx->header_buf[ctx->header_len] = '\0';
+                        log_draw("header_buf:%s\r\n",ctx->header_buf);
                     }
                     
                     // 检查头部结束标记
                     char *header_end = strstr(ctx->header_buf, "\r\n\r\n");
                     if (header_end) {
                         *header_end = '\0'; // 终止字符串
-                        parse_header(ctx);
+                        parse_header(ctx);  // 解析 头部信息
                         
                         ESP_LOGI(TAG, "Frame header: %s", ctx->header_buf);
                         ESP_LOGI(TAG, "Content-Length: %d, Timestamp: %d.%06d", 
                                 ctx->content_length, ctx->timestamp_sec, ctx->timestamp_usec);
                         
-                        // 创建文件保存JPEG
-                        char filename[64];
-                        snprintf(filename, sizeof(filename), "/sdcard/frame_%03d_%d.%06d.jpg", 
-                                 ctx->frame_count, ctx->timestamp_sec, ctx->timestamp_usec);
-                        ctx->jpg_file = fopen(filename, "wb");
-                        if (!ctx->jpg_file) {
-                            ESP_LOGE(TAG, "Failed to open file: %s", filename);
-                            return ESP_FAIL;
-                        }
+                        // 创建 buffer 保存图像数据
                         
                         ctx->in_header = false;
                         ctx->in_frame = true;
@@ -138,23 +143,17 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
                         return ESP_FAIL;
                     }
                 } else if (ctx->in_frame) {
+                    ESP_LOGI(TAG, "Start Processing image data");
                     // 处理图像数据
                     size_t to_write = MIN(data_len - data_processed, ctx->content_length - ctx->bytes_received);
                     if (to_write > 0) {
-                        if (fwrite(data + data_processed, 1, to_write, ctx->jpg_file) != to_write) {
-                            ESP_LOGE(TAG, "File write error");
-                            fclose(ctx->jpg_file);
-                            ctx->jpg_file = NULL;
-                            return ESP_FAIL;
-                        }
+                        // 接收每个图像数据片段
                         data_processed += to_write;
                         ctx->bytes_received += to_write;
                     }
                     
                     // 检查帧是否完整
                     if (ctx->bytes_received >= ctx->content_length) {
-                        fclose(ctx->jpg_file);
-                        ctx->jpg_file = NULL;
                         ctx->in_frame = false;
                         ESP_LOGI(TAG, "Frame %d complete, %d bytes saved", 
                                 ctx->frame_count, ctx->bytes_received);
@@ -166,19 +165,11 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
         
         case HTTP_EVENT_DISCONNECTED: {
             ESP_LOGI(TAG, "Disconnected from server");
-            if (ctx->jpg_file) {
-                fclose(ctx->jpg_file);
-                ctx->jpg_file = NULL;
-            }
             break;
         }
         
         case HTTP_EVENT_ERROR: {
             ESP_LOGE(TAG, "HTTP client error");
-            if (ctx->jpg_file) {
-                fclose(ctx->jpg_file);
-                ctx->jpg_file = NULL;
-            }
             break;
         }
         
@@ -190,7 +181,6 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt) {
 
 void http_stream_task(void *pvParameters) {
     stream_ctx_t ctx = {
-        .jpg_file = NULL,
         .frame_count = 0,
         .content_length = -1,
         .bytes_received = 0,
