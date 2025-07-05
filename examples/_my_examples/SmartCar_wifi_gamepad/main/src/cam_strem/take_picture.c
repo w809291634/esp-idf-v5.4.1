@@ -72,30 +72,23 @@ static void esp_cam_stream_task(void *arg)
         frame = stream_client_fb_get();
         if (frame) {
             /* 获取lvgl的显示buffer */
-            start_time = pdTICKS_TO_MS(xTaskGetTickCount());
-            if(img_jpeg_decode(3, 0,frame->buf,frame->len,&out_buf,&out_length)==0){
-                // 测试解析 一帧 240*240 的时间约为 43 ms, 约为23帧
-                ESP_LOGI(TAG, "decode use time:%ld", pdTICKS_TO_MS(xTaskGetTickCount()) - start_time);
-                ESP_LOGI(TAG, "out_buf:%p out_length:%ld",out_buf,out_length);
-
+            if(jpg_decode2rgb565(frame->buf,frame->len,frame->width,frame->height,&out_buf,&out_length)==0){
                 // because SPI LCD is big-endian, we need to swap the RGB bytes order
                 lv_draw_sw_rgb565_swap(out_buf, out_length/2);      // 像素数量
                 static uint8_t buf_switch = 0;
                 for (int y = 0; y < 240; y += EXAMPLE_LVGL_DRAW_BUF_LINES) {
-                    ESP_LOGI(TAG, "out_buf:%p", out_buf+(size_t)(EXAMPLE_LCD_H_RES * y * sizeof(lv_color16_t)));
+                    // ESP_LOGI(TAG, "out_buf:%p", out_buf+(size_t)(EXAMPLE_LCD_H_RES * y * sizeof(lv_color16_t)));
                     if(buf_switch%2 == 0)
                         memcpy(lvgl_draw_buf1,out_buf+(size_t)(EXAMPLE_LCD_H_RES * y * sizeof(lv_color16_t)),DRAW_BUFFER_SIZE);
                     else
                         memcpy(lvgl_draw_buf2,out_buf+(size_t)(EXAMPLE_LCD_H_RES * y * sizeof(lv_color16_t)),DRAW_BUFFER_SIZE);
-                    start_time = pdTICKS_TO_MS(xTaskGetTickCount());
                     // copy a buffer's content to a specific area of the display
-                    // 80mhz的话，用时极其短。
+                    // 80mhz的话，用时极其短。有可能运行到下面卡死
                     // x宽度240，高度也是显示240行，需要分段 拷贝到 buf1 ，最后显示到一帧里面
                     if(buf_switch%2 == 0)
                         esp_lcd_panel_draw_bitmap(panel_handle,0,y,240,y+EXAMPLE_LVGL_DRAW_BUF_LINES, lvgl_draw_buf1);  // 末行和末列会减1
                     else
                         esp_lcd_panel_draw_bitmap(panel_handle,0,y,240,y+EXAMPLE_LVGL_DRAW_BUF_LINES, lvgl_draw_buf2);  // 末行和末列会减1
-                    ESP_LOGI(TAG, "draw use time:%ld y:%d", pdTICKS_TO_MS(xTaskGetTickCount()) - start_time,y);
                     buf_switch ++ ;
                 }
                 heap_caps_free(out_buf);
