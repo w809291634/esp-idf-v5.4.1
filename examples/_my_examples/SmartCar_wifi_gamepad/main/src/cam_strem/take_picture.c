@@ -47,9 +47,6 @@
 #define TEST_ESP_OK(ret) assert(ret == ESP_OK)
 #define TEST_ASSERT_NOT_NULL(ret) assert(ret != NULL)
 
-static bool auto_jpeg_support = false; // whether the camera sensor support compression or JPEG encode
-static QueueHandle_t xQueueIFrame = NULL;
-
 static const char *TAG = "video s_client";
 
 extern uint8_t DRAM_ATTR lvgl_draw_buf1[DRAW_BUFFER_SIZE] __attribute__((aligned(16)));
@@ -72,8 +69,7 @@ static void esp_cam_stream_task(void *arg)
     // 初始化计时器
     start_time = pdTICKS_TO_MS(xTaskGetTickCount());
     while (true) {
-        // frame = esp_camera_fb_get();
-        frame = NULL;
+        frame = stream_client_fb_get();
         if (frame) {
             /* 获取lvgl的显示buffer */
             start_time = pdTICKS_TO_MS(xTaskGetTickCount());
@@ -104,7 +100,7 @@ static void esp_cam_stream_task(void *arg)
                 }
                 heap_caps_free(out_buf);
             }
-            // esp_camera_fb_return(frame);
+            stream_client_fb_return(frame);
 
             // 帧计数增加
             frame_count++;
@@ -119,7 +115,6 @@ static void esp_cam_stream_task(void *arg)
                 start_time = current_time;
             }
         }
-        vTaskDelay(pdMS_TO_TICKS(1000));
     }
     vTaskDelete(NULL);
 }
@@ -128,12 +123,10 @@ void esp_cam_client_stream_init(void)
 {
     app_wifi_main();
 
-    xQueueIFrame = xQueueCreate(2, sizeof(camera_fb_t *));
-
     TEST_ESP_OK(start_stream_client());
 
     // 创建任务并绑定到 CPU1
-    BaseType_t task_created = xTaskCreatePinnedToCore(&esp_cam_stream_task, "cam_stream", 6144, NULL, 5, NULL, 1);
+    BaseType_t task_created = xTaskCreatePinnedToCore(&esp_cam_stream_task, "cam_show", 6144, NULL, 6, NULL, 1);
     // 使用 ESP_ERROR_CHECK 检查是否成功创建任务
     ESP_ERROR_CHECK(task_created == pdPASS ? ESP_OK : ESP_FAIL);
 }

@@ -4,6 +4,7 @@
 :: 设置你的ESP-IDF项目根目录（或作为参数传入）,不能有空格
 set PROJECT_PATH=D:\esp32_8266_files\esp-idf-v5.4.1\examples\_my_examples\SmartCar_wifi_gamepad
 :: 默认串口号和波特率
+@REM set DEFAULT_COM=COM8
 set DEFAULT_COM=COM14
 set DEFAULT_FBPS=460800
 @REM set DEFAULT_FBPS=2000000
