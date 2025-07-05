@@ -219,7 +219,7 @@ static int mem_info(int argc, char **argv)
 static void register_meminfo(void)
 {
     const esp_console_cmd_t cmd = {
-        .command = "meminfo",
+        .command = "mem",
         .help = "Show free memory in SRAM and PSRAM",
         .hint = NULL,
         .func = &mem_info,

@@ -90,7 +90,8 @@
       "spi_master.h": "c",
       "esp_err.h": "c",
       "esp_lcd_touch_stmpe610.h": "c",
-      "*.inc": "c"
+      "*.inc": "c",
+      "cstdlib": "c"
     },
     "terminal.integrated.defaultProfile.windows": "Command Prompt",    // 默认使用cmd终端
     "terminal.integrated.scrollback": 10000,

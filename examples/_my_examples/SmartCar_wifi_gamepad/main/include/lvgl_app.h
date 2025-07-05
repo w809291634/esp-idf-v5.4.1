@@ -70,6 +70,8 @@ extern "C" {
 #define DRAW_BUFFER_SIZE    (size_t)(EXAMPLE_LCD_H_RES * EXAMPLE_LVGL_DRAW_BUF_LINES * sizeof(lv_color16_t))
 #endif
 
+extern _lock_t lvgl_api_lock;
+
 void lvgl_init(void);
 /* declarations go here */
 
