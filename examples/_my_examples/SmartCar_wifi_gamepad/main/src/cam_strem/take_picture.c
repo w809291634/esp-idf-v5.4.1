@@ -72,6 +72,7 @@ static void esp_cam_stream_task(void *arg)
         frame = stream_client_fb_get();
         if (frame) {
             /* 获取lvgl的显示buffer */
+            size_t frame_len = frame->len;
             if(jpg_decode2rgb565(frame->buf,frame->len,frame->width,frame->height,&out_buf,&out_length)==0){
                 // because SPI LCD is big-endian, we need to swap the RGB bytes order
                 lv_draw_sw_rgb565_swap(out_buf, out_length/2);      // 像素数量
@@ -103,7 +104,7 @@ static void esp_cam_stream_task(void *arg)
             // 每过一秒打印一次帧率
             if ((current_time - start_time) >= 1000) {
                 float fps = (float)frame_count / ((current_time - start_time) / 1000.0f);
-                ESP_LOGI(TAG, "FPS: %.2f frame: %zu bytes", fps, frame->len);
+                ESP_LOGI(TAG, "FPS: %.2f frame: %zu bytes", fps, frame_len);
                 // 重置计数器
                 frame_count = 0;
                 start_time = current_time;
